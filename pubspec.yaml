@@ -1,5 +1,6 @@
-name: next_movie
-description: A new Flutter project.
+name: MEXT
+author: Marco Pinto <https://github.com/mrcoalp>
+description: Choose your next movie to watch with this movie randomizer
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -24,10 +25,15 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
   font_awesome_flutter: ^8.4.0
+  provider: ^3.0.0
+  json_annotation: ^2.4.0
+  http: ^0.12.0+2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  build_runner: ^1.0.0
+  json_serializable: ^3.0.0
 
 
 # For information on the generic Dart part of this file, see the

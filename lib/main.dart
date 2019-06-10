@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:next_movie/ui/tabs.dart';
+import 'package:MEXT/ui/tabs.dart';
 
 void main() => runApp(MEXT());
 
@@ -13,10 +13,8 @@ class _MEXTState extends State<MEXT> {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        primarySwatch: Colors.white,
-      ),
-      darkTheme: ThemeData(
-        primarySwatch: Colors.deepOrange,
+        primaryColor: Colors.white,
+        accentColor: Colors.teal,
       ),
       home: MEXTTabs(),
     );
