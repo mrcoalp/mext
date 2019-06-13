@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:MEXT/ui/tabs.dart';
+import 'package:MEXT/ui/movie_tabs.dart';
 
 void main() => runApp(MEXT());
 
@@ -16,7 +16,7 @@ class _MEXTState extends State<MEXT> {
         primaryColor: Colors.white,
         accentColor: Colors.teal,
       ),
-      home: MEXTTabs(),
+      home: MovieTabs(),
     );
   }
 }

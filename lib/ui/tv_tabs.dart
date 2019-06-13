@@ -1,14 +1,20 @@
+import 'package:MEXT/ui/drawer/drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:MEXT/ui/random_movie.dart';
 
-class MEXTTabs extends StatelessWidget {
+class TVTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
         backgroundColor: Theme.of(context).primaryColor,
+        appBar: AppBar(
+          elevation: 0,
+          title: Text('TV Shows'),
+          centerTitle: true,
+        ),
+        drawer: DrawerMEXT(),
         bottomNavigationBar: TabBar(
           tabs: <Widget>[
             Tab(
@@ -33,9 +39,9 @@ class MEXTTabs extends StatelessWidget {
         ),
         body: TabBarView(
           children: <Widget>[
-            RandomMovieScreen(),
-            Icon(FontAwesomeIcons.user),
-            Icon(FontAwesomeIcons.cog),
+            Center(child: Text('Coming soon...')),
+            Center(child: Text('Coming soon...')),
+            Center(child: Text('Coming soon...')),
           ],
         ),
       ),
