@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:MEXT/constants.dart';
 
 class APIRandomMovie {
   final String withGenres;
@@ -21,9 +22,9 @@ class APIRandomMovie {
   Future getMovieAndGenres() async {
     var json;
     final String uri =
-        'http://192.168.3.72/mext/api/randommovie?with_genres=$withGenres&without_genres=$withoutGenres&rating=$rating&year=$year&vote_count=$voteCount&exclude_watched=$excludeWatched';
+        '$kAPI_URI/randommovie?with_genres=$withGenres&without_genres=$withoutGenres&rating=$rating&year=$year&vote_count=$voteCount&exclude_watched=$excludeWatched';
     print(uri);
-    
+
     try {
       var res = await http.get(uri);
       json = jsonDecode(res.body);

@@ -19,16 +19,16 @@ class DrawerMEXT extends StatelessWidget {
             title: Text('Movies'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => MovieTabs()));
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => MovieTabs()));
             },
           ),
           ListTile(
             title: Text('TV Shows'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => TVTabs()));
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => TVTabs()));
             },
           ),
         ],

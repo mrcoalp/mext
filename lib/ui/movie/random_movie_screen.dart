@@ -1,6 +1,8 @@
 import 'package:MEXT/blocs/movies_bloc.dart';
 import 'package:MEXT/data/http/api_randommovie.dart';
 import 'package:MEXT/data/models/movie.dart';
+import 'package:MEXT/ui/movie/filter_screen.dart';
+import 'package:MEXT/ui/movie/movie_history_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -46,6 +48,19 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
         children: <Widget>[
           FloatingActionButton(
             heroTag: null,
+            mini: true,
+            backgroundColor: Theme.of(context).primaryColor,
+            foregroundColor: Theme.of(context).accentColor,
+            child: Icon(
+              FontAwesomeIcons.history,
+              size: 16,
+            ),
+            onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => MovieHistoryScreen())),
+          ),
+          SizedBox(width: 5),
+          FloatingActionButton(
+            heroTag: null,
             backgroundColor: Theme.of(context).primaryColor,
             foregroundColor: Theme.of(context).accentColor,
             mini: true,
@@ -53,7 +68,8 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
               FontAwesomeIcons.filter,
               size: 16,
             ),
-            onPressed: null,
+            onPressed: () => Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => FilterScreen())),
           ),
           SizedBox(width: 10),
           FloatingActionButton(
@@ -83,8 +99,10 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
                       width: MediaQuery.of(context).size.width / 3,
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Image.network(
-                            'http://image.tmdb.org/t/p/w500${_movie.poster_path}'),
+                        child: _movie.poster_path != null
+                            ? Image.network(
+                                'http://image.tmdb.org/t/p/w500${_movie.poster_path}')
+                            : Container(),
                       ),
                     ),
                     Container(
@@ -131,17 +149,23 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
       _loading = true;
     });
 
-    var rndMovie = new APIRandomMovie();
+    var rndMovie = new APIRandomMovie(
+        withGenres: mb.filterWithGenres,
+        withoutGenres: mb.filterWithoutGenres,
+        rating: mb.filterRating,
+        year: mb.filterYear,
+        voteCount: mb.filterVoteCount,
+        excludeWatched: mb.filterExcludeWatched);
 
     var response = await rndMovie.getMovieAndGenres();
     this._movie = Movie.fromJson(response['movie']);
-    print(this._movie.toJson());
 
     _genres = [];
     for (String g in response['genres']) _genres.add(g);
 
     mb.currentMovie = this._movie;
     mb.currentGenres = _genres;
+    mb.movieHistory.add(_movie);
 
     setState(() {
       _loading = false;
