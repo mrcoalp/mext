@@ -276,7 +276,10 @@ class _FilterScreenState extends State<FilterScreen> {
                 genre: g.name,
                 selectFunc: () {
                   _withGenres.add(g.id);
+                  if (_withoutGenres.contains(g.id))
+                    _withoutGenres.remove(g.id);
                   mb.filterWithGenres = _withGenres.genres.join(',');
+                  mb.filterWithoutGenres = _withoutGenres.genres.join(',');
 
                   _handleGenresLists(mb);
                   setState(() {});
@@ -300,7 +303,9 @@ class _FilterScreenState extends State<FilterScreen> {
                 genre: g.name,
                 selectFunc: () {
                   _withoutGenres.add(g.id);
+                  if (_withGenres.contains(g.id)) _withGenres.remove(g.id);
                   mb.filterWithoutGenres = _withoutGenres.genres.join(',');
+                  mb.filterWithGenres = _withGenres.genres.join(',');
 
                   _handleGenresLists(mb);
                   setState(() {});
@@ -338,6 +343,9 @@ class GenreUnselectedButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: RaisedButton(
+        elevation: 5,
+        color: Theme.of(context).primaryColor,
+        textColor: Theme.of(context).accentColor,
         child: Text(genre),
         onPressed: selectFunc,
       ),

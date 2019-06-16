@@ -28,10 +28,7 @@ class RandomMovieRepository {
         '${Config.API_URL}/randommovie?with_genres=$withGenres&without_genres=$withoutGenres&rating=$rating&year=$year&vote_count=$voteCount&exclude_watched=$excludeWatched';
     try {
       json = await webClient.get(uri);
-      var genres = new List<String>();
-      for (String g in json['genres']) genres.add(g);
-      return new RandomMovieResponse(
-          movie: new Movie.fromJson(json['movie']), genres: genres);
+      return new RandomMovieResponse(movie: new Movie.fromJson(json));
     } catch (e) {
       print(e.toString());
       return new RandomMovieResponse.withError(e.toString());

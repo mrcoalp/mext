@@ -1,3 +1,4 @@
+import 'package:MEXT/data/models/genre.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'movie.g.dart';
@@ -17,6 +18,7 @@ class Movie {
   final bool adult;
   final String overview;
   final String release_date;
+  final List<Genre> genres;
 
   Movie(
       this.vote_count,
@@ -31,7 +33,8 @@ class Movie {
       this.backdrop_path,
       this.adult,
       this.overview,
-      this.release_date);
+      this.release_date,
+      this.genres);
 
   factory Movie.fromJson(Map<String, dynamic> json) => _$MovieFromJson(json);
   Map<String, dynamic> toJson() => _$MovieToJson(this);

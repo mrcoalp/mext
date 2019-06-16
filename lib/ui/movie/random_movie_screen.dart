@@ -1,5 +1,6 @@
 import 'package:MEXT/blocs/movies_bloc.dart';
 import 'package:MEXT/constants.dart';
+import 'package:MEXT/data/models/genre.dart';
 import 'package:MEXT/data/repositories/randommovie_repository.dart';
 import 'package:MEXT/data/models/movie.dart';
 import 'package:MEXT/ui/error_widget.dart';
@@ -17,7 +18,7 @@ class RandomMovieScreen extends StatefulWidget {
 
 class _RandomMovieScreenState extends State<RandomMovieScreen> {
   Movie _movie;
-  var _genres = new List<String>();
+  String _genresString = '';
 
   bool _loading = false;
   String _error = '';
@@ -40,11 +41,10 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
       this._getRandomMovie(_moviesBloc);
     else {
       _movie = _moviesBloc.currentMovie;
-      _genres = _moviesBloc.currentGenres;
+      _genresString = '';
+      for (Genre g in _movie.genres)
+        _genresString += _genresString != '' ? ', ${g.name}' : g.name;
     }
-
-    String _genresString = '';
-    for (String g in _genres) _genresString += _genresString != '' ? ', $g' : g;
 
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
@@ -151,6 +151,7 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
                               ),
                               SizedBox(height: 10),
                               Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: <Widget>[
                                   Text(
                                       'Rating: ${_movie.vote_average.toString()}'),
@@ -197,59 +198,6 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
                     )
                   ],
                 ),
-      //  ListView(
-      //     children: <Widget>[
-      //       Row(
-      //         mainAxisAlignment: MainAxisAlignment.spaceAround,
-      //         crossAxisAlignment: CrossAxisAlignment.center,
-      //         children: <Widget>[
-      //           Container(
-      //             width: MediaQuery.of(context).size.width / 3,
-      //             child: Padding(
-      //               padding: const EdgeInsets.all(8.0),
-      //               child: _movie.poster_path != null
-      //                   ? Image.network(
-      //                       '$kTMDBimgPath${_movie.poster_path}')
-      //                   : Container(),
-      //             ),
-      //           ),
-      //           Container(
-      //             width: (MediaQuery.of(context).size.width / 3) * 2,
-      //             child: Padding(
-      //               padding: const EdgeInsets.all(8.0),
-      //               child: Column(
-      //                 crossAxisAlignment: CrossAxisAlignment.start,
-      //                 children: <Widget>[
-      //                   Text(
-      //                     _movie.title,
-      //                     style: TextStyle(fontWeight: FontWeight.bold),
-      //                   ),
-      //                   SizedBox(height: 10),
-      //                   Text(
-      //                       'Rating: ${_movie.vote_average.toString()}'),
-      //                   Icon(FontAwesomeIcons.starHalfAlt),
-      //                   SizedBox(height: 5),
-      //                   Text('Release Date: ${_movie.release_date}'),
-      //                   SizedBox(height: 5),
-      //                   for (String g in _genres) Text(g),
-      //                 ],
-      //               ),
-      //             ),
-      //           ),
-      //         ],
-      //       ),
-      //       Padding(
-      //         padding: const EdgeInsets.all(8.0),
-      //         child: Text(
-      //           _movie.overview,
-      //           textAlign: TextAlign.justify,
-      //         ),
-      //       ),
-      //       SizedBox(
-      //         height: 70,
-      //       ),
-      //     ],
-      //   ),
     );
   }
 
@@ -299,9 +247,7 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
     } else {
       _error = '';
       this._movie = response.movie;
-      _genres = response.genres;
       mb.currentMovie = this._movie;
-      mb.currentGenres = _genres;
       mb.movieHistory.add(_movie);
     }
 

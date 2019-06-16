@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 class MoviesBloc extends ChangeNotifier {
   Movie _currentMovie;
-  List<String> _currentGenres;
   List<Genre> _allGenres;
 
   String _filterWithGenres = '';
@@ -20,13 +19,6 @@ class MoviesBloc extends ChangeNotifier {
 
   set currentMovie(Movie movie) {
     _currentMovie = movie;
-    notifyListeners();
-  }
-
-  List<String> get currentGenres => _currentGenres;
-
-  set currentGenres(List genres) {
-    _currentGenres = genres;
     notifyListeners();
   }
 
