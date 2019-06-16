@@ -1,8 +1,7 @@
 import 'package:MEXT/blocs/movies_bloc.dart';
-import 'package:MEXT/data/http/api_genres_list.dart';
+import 'package:MEXT/constants.dart';
 import 'package:MEXT/data/models/genre.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 class FilterScreen extends StatefulWidget {
@@ -11,7 +10,9 @@ class FilterScreen extends StatefulWidget {
 }
 
 class _FilterScreenState extends State<FilterScreen> {
-  List<Genre> _allGenres;
+  // final _genresRepository = new GenresRepository();
+
+  List<Genre> _allGenres = [];
   var _withGenres = new GenresList();
   var _withoutGenres = new GenresList();
 
@@ -27,7 +28,7 @@ class _FilterScreenState extends State<FilterScreen> {
   var _yearCtrl = new TextEditingController();
   var _voteCountCtrl = new TextEditingController();
 
-  bool _loading = false;
+  // bool _loading = false;
 
   @override
   void initState() {
@@ -38,26 +39,42 @@ class _FilterScreenState extends State<FilterScreen> {
   Widget build(BuildContext context) {
     final MoviesBloc _moviesBloc = Provider.of<MoviesBloc>(context);
 
-    if (_moviesBloc.allGenres == null)
-      _getGenres(_moviesBloc);
-    else {
-      _allGenres = _moviesBloc.allGenres;
-      _withGenres.genres = _moviesBloc.filterWithGenres != ''
-          ? _moviesBloc.filterWithGenres.split(',')
-          : [];
-      _withoutGenres.genres = _moviesBloc.filterWithoutGenres != ''
-          ? _moviesBloc.filterWithoutGenres.split(',')
-          : [];
-      _rating = _moviesBloc.filterRating;
-      if (_ratingCtrl.text == '') _ratingCtrl.text = _rating.toString();
-      _year = _moviesBloc.filterYear;
-      if (_yearCtrl.text == '') _yearCtrl.text = _year.toString();
-      _voteCount = _moviesBloc.filterVoteCount;
-      if (_voteCountCtrl.text == '')
-        _voteCountCtrl.text = _voteCount.toString();
-      _excludeWatched = _moviesBloc.filterExcludeWatched;
-      _handleGenresLists(_moviesBloc);
-    }
+    for (var g in kgenres) _allGenres.add(new Genre.fromJson(g));
+    _withGenres.genres = _moviesBloc.filterWithGenres != ''
+        ? _moviesBloc.filterWithGenres.split(',')
+        : [];
+    _withoutGenres.genres = _moviesBloc.filterWithoutGenres != ''
+        ? _moviesBloc.filterWithoutGenres.split(',')
+        : [];
+    _rating = _moviesBloc.filterRating;
+    if (_ratingCtrl.text == '') _ratingCtrl.text = _rating.toString();
+    _year = _moviesBloc.filterYear;
+    if (_yearCtrl.text == '') _yearCtrl.text = _year.toString();
+    _voteCount = _moviesBloc.filterVoteCount;
+    if (_voteCountCtrl.text == '') _voteCountCtrl.text = _voteCount.toString();
+    _excludeWatched = _moviesBloc.filterExcludeWatched;
+    _handleGenresLists(_moviesBloc);
+
+    // if (_moviesBloc.allGenres == null)
+    //   _getGenres(_moviesBloc);
+    // else {
+    //   _allGenres = _moviesBloc.allGenres;
+    //   _withGenres.genres = _moviesBloc.filterWithGenres != ''
+    //       ? _moviesBloc.filterWithGenres.split(',')
+    //       : [];
+    //   _withoutGenres.genres = _moviesBloc.filterWithoutGenres != ''
+    //       ? _moviesBloc.filterWithoutGenres.split(',')
+    //       : [];
+    //   _rating = _moviesBloc.filterRating;
+    //   if (_ratingCtrl.text == '') _ratingCtrl.text = _rating.toString();
+    //   _year = _moviesBloc.filterYear;
+    //   if (_yearCtrl.text == '') _yearCtrl.text = _year.toString();
+    //   _voteCount = _moviesBloc.filterVoteCount;
+    //   if (_voteCountCtrl.text == '')
+    //     _voteCountCtrl.text = _voteCount.toString();
+    //   _excludeWatched = _moviesBloc.filterExcludeWatched;
+    //   _handleGenresLists(_moviesBloc);
+    // }
 
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
@@ -85,23 +102,23 @@ class _FilterScreenState extends State<FilterScreen> {
                   ),
                 ),
               ),
-              _loading
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation(
-                            Theme.of(context).primaryColor),
-                      ),
-                    )
-                  : Container(
-                      height: 50,
-                      child: ListView(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        children: <Widget>[
-                          ..._withGenresWidget,
-                        ],
-                      ),
-                    ),
+              // _loading
+              //     ? Center(
+              //         child: CircularProgressIndicator(
+              //           valueColor: AlwaysStoppedAnimation(
+              //               Theme.of(context).primaryColor),
+              //         ),
+              //       ):
+              Container(
+                height: 50,
+                child: ListView(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  children: <Widget>[
+                    ..._withGenresWidget,
+                  ],
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.only(top: 20),
                 child: Text(
@@ -111,23 +128,23 @@ class _FilterScreenState extends State<FilterScreen> {
                   ),
                 ),
               ),
-              _loading
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation(
-                            Theme.of(context).primaryColor),
-                      ),
-                    )
-                  : Container(
-                      height: 50,
-                      child: ListView(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        children: <Widget>[
-                          ..._withoutGenresWidget,
-                        ],
-                      ),
-                    ),
+              // _loading
+              //     ? Center(
+              //         child: CircularProgressIndicator(
+              //           valueColor: AlwaysStoppedAnimation(
+              //               Theme.of(context).primaryColor),
+              //         ),
+              //       ):
+              Container(
+                height: 50,
+                child: ListView(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  children: <Widget>[
+                    ..._withoutGenresWidget,
+                  ],
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.only(top: 20),
                 child: Text(
@@ -223,20 +240,20 @@ class _FilterScreenState extends State<FilterScreen> {
     );
   }
 
-  Future<void> _getGenres(MoviesBloc mb) async {
-    setState(() {
-      _loading = true;
-    });
+  // Future<void> _getGenres(MoviesBloc mb) async {
+  //   setState(() {
+  //     _loading = true;
+  //   });
 
-    _allGenres = await APIGenresList.getGenres();
-    mb.allGenres = _allGenres;
+  //   _allGenres = await _genresRepository.loadFromTMDB();
+  //   mb.allGenres = _allGenres;
 
-    _handleGenresLists(mb);
+  //   _handleGenresLists(mb);
 
-    setState(() {
-      _loading = false;
-    });
-  }
+  //   setState(() {
+  //     _loading = false;
+  //   });
+  // }
 
   void _handleGenresLists(MoviesBloc mb) {
     _withGenresWidget = [];
@@ -339,8 +356,8 @@ class GenreSelectedButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: RaisedButton(
-        color: Colors.black,
-        textColor: Colors.white,
+        color: Theme.of(context).accentColor,
+        textColor: Theme.of(context).primaryColor,
         child: Text(genre),
         onPressed: unselectFunc,
       ),

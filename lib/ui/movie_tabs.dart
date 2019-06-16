@@ -1,9 +1,7 @@
-import 'package:MEXT/blocs/movies_bloc.dart';
 import 'package:MEXT/ui/drawer/drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:MEXT/ui/movie/random_movie_screen.dart';
-import 'package:provider/provider.dart';
 
 class MovieTabs extends StatelessWidget {
   @override

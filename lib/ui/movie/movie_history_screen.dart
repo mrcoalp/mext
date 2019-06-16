@@ -1,4 +1,5 @@
 import 'package:MEXT/blocs/movies_bloc.dart';
+import 'package:MEXT/constants.dart';
 import 'package:MEXT/data/models/movie.dart';
 import 'package:MEXT/ui/movie/movie_details_screen.dart';
 import 'package:flutter/material.dart';
@@ -39,8 +40,7 @@ class MovieHistoryScreen extends StatelessWidget {
               leading: m.poster_path != null
                   ? Hero(
                       tag: m.id,
-                      child: Image.network(
-                          'http://image.tmdb.org/t/p/w500${m.poster_path}'),
+                      child: Image.network('$kTMDBimgPath${m.poster_path}'),
                     )
                   : Container(),
               title: Text(
