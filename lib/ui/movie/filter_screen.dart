@@ -9,10 +9,11 @@ class FilterScreen extends StatefulWidget {
   _FilterScreenState createState() => _FilterScreenState();
 }
 
+//TODO(marco): implement save settings to shared preferences
 class _FilterScreenState extends State<FilterScreen> {
   // final _genresRepository = new GenresRepository();
 
-  List<Genre> _allGenres = [];
+  var _allGenres = new List<Genre>();
   var _withGenres = new GenresList();
   var _withoutGenres = new GenresList();
 
@@ -39,7 +40,9 @@ class _FilterScreenState extends State<FilterScreen> {
   Widget build(BuildContext context) {
     final MoviesBloc _moviesBloc = Provider.of<MoviesBloc>(context);
 
+    _allGenres = [];
     for (var g in kgenres) _allGenres.add(new Genre.fromJson(g));
+    _allGenres.sort((a, b) => a.name.compareTo(b.name));
     _withGenres.genres = _moviesBloc.filterWithGenres != ''
         ? _moviesBloc.filterWithGenres.split(',')
         : [];
@@ -121,7 +124,7 @@ class _FilterScreenState extends State<FilterScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 20),
                 child: Text(
-                  'Without Genres (scroll horizontally)',
+                  'Exclude Genres (scroll horizontally)',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                   ),

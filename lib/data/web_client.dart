@@ -39,4 +39,18 @@ class WebClient {
 
     return jsonDecode(res.body);
   }
+
+  Future<dynamic> post(String url, dynamic body, [String token]) async {
+    print('GET $url TOKEN $token');
+
+    final http.Response res = await http.post(url, body: body);
+
+    print('code: ${res.statusCode}\nheaders: ${res.headers}\nres: ${res.body}');
+
+    if (res.statusCode >= 400) {
+      throw _handleError(res, token);
+    }
+
+    return jsonDecode(res.body);
+  }
 }
