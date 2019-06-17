@@ -92,32 +92,32 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 Text('Runtime: ${_movieInfo.runtime} mins'),
                                 SizedBox(height: 20),
                                 for (String t in _trailers)
-                                  // TrailerThumbnail(
-                                  //   t,
-                                  //   () async {
-                                  //     await _launchURL(
-                                  //         'https://www.youtube.com/watch?v=$t');
-                                  //   },
-                                  // ),
-                                  YoutubeScaffold(
-                                    child: YoutubePlayer(
-                                      key: Key(t),
-                                      context: context,
-                                      videoId: t,
-                                      autoPlay: false,
-                                      showVideoProgressIndicator: true,
-                                      thumbnailUrl:
-                                          'https://i3.ytimg.com/vi/$t/mqdefault.jpg',
-                                      videoProgressIndicatorColor:
-                                          Theme.of(context).accentColor,
-                                      progressColors: ProgressColors(
-                                        playedColor:
-                                            Theme.of(context).accentColor,
-                                        handleColor:
-                                            Theme.of(context).accentColor,
-                                      ),
-                                    ),
+                                  TrailerThumbnail(
+                                    t,
+                                    () async {
+                                      await _launchURL(
+                                          'https://www.youtube.com/watch?v=$t');
+                                    },
                                   ),
+                                // YoutubeScaffold(
+                                //   child: YoutubePlayer(
+                                //     key: Key(t),
+                                //     context: context,
+                                //     videoId: t,
+                                //     autoPlay: false,
+                                //     showVideoProgressIndicator: true,
+                                //     thumbnailUrl:
+                                //         'https://i3.ytimg.com/vi/$t/mqdefault.jpg',
+                                //     videoProgressIndicatorColor:
+                                //         Theme.of(context).accentColor,
+                                //     progressColors: ProgressColors(
+                                //       playedColor:
+                                //           Theme.of(context).accentColor,
+                                //       handleColor:
+                                //           Theme.of(context).accentColor,
+                                //     ),
+                                //   ),
+                                // ),
                                 SizedBox(height: 10),
                                 RaisedButton(
                                   color: Colors.amber,
@@ -254,29 +254,39 @@ class TrailerThumbnail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 8, bottom: 8),
-      child: Container(
-        height: 100,
-        child: Center(
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              color: Colors.white60,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Icon(
-                Icons.play_arrow,
-                color: Colors.black,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Material(
+          elevation: 5,
+          color: Colors.transparent,
+          child: AspectRatio(
+            aspectRatio: 16 / 9,
+            child: Container(
+              child: Center(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    color: Colors.white70,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.play_arrow,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
               ),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  image: DecorationImage(
+                    image: NetworkImage(
+                        'https://img.youtube.com/vi/$videoID/mqdefault.jpg'),
+                    fit: BoxFit.cover,
+                  )),
             ),
           ),
         ),
-        decoration: BoxDecoration(
-            image: DecorationImage(
-          image:
-              NetworkImage('https://img.youtube.com/vi/$videoID/mqdefault.jpg'),
-          fit: BoxFit.cover,
-        )),
       ),
     );
   }
