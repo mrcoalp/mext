@@ -9,7 +9,6 @@ class MovieTabs extends StatelessWidget {
     return DefaultTabController(
       length: 4,
       child: Scaffold(
-        backgroundColor: Theme.of(context).primaryColor,
         appBar: AppBar(
           elevation: 0,
           title: Text('Movies'),

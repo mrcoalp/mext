@@ -8,7 +8,6 @@ class TVTabs extends StatelessWidget {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        backgroundColor: Theme.of(context).primaryColor,
         appBar: AppBar(
           elevation: 0,
           title: Text('TV Shows'),

@@ -29,11 +29,22 @@ class _MEXTState extends State<MEXT> {
           brightness: Brightness.light,
           primaryColor: Colors.white,
           accentColor: Colors.teal,
+          scaffoldBackgroundColor: Colors.white,
+          appBarTheme: AppBarTheme(
+            brightness: Brightness.light,
+            color: Colors.white,
+          ),
         ),
         darkTheme: ThemeData(
           brightness: Brightness.dark,
           primaryColor: Colors.black,
           accentColor: Colors.teal,
+          scaffoldBackgroundColor: Colors.black,
+          buttonColor: Colors.black,
+          appBarTheme: AppBarTheme(
+            brightness: Brightness.dark,
+            color: Colors.black,
+          ),
         ),
         home: MovieTabs(),
       ),

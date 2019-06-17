@@ -47,7 +47,6 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
     }
 
     return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,

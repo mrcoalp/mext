@@ -53,6 +53,14 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
             sliver: SliverList(
               delegate: SliverChildListDelegate(
                 <Widget>[
+                  Text(
+                    '${widget._movie.title}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                  SizedBox(height: 15),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
@@ -76,7 +84,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     widget._movie.overview,
                     textAlign: TextAlign.justify,
                   ),
-                  SizedBox(height: 20),
+                  SizedBox(height: 10),
                   _loading
                       ? Center(
                           child: CircularProgressIndicator(
@@ -119,6 +127,17 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 //   ),
                                 // ),
                                 SizedBox(height: 10),
+                                Center(
+                                  child: Text(
+                                    _movieInfo.tagline ?? '',
+                                    textAlign: TextAlign.center,
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                _movieInfo.tagline != ''
+                                    ? SizedBox(height: 10)
+                                    : Container(),
                                 RaisedButton(
                                   color: Colors.amber,
                                   child: Text('IMDB'),
@@ -198,31 +217,31 @@ class MovieDetailsAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).primaryColor.withOpacity(0.9),
       expandedHeight: (MediaQuery.of(context).size.height / 3) * 2.5,
       floating: false,
       pinned: true,
       flexibleSpace: FlexibleSpaceBar(
         centerTitle: true,
-        title: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width - 192,
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).brightness == Brightness.light
-                  ? Colors.white70
-                  : Colors.black87,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-              child: Text(
-                movie.title,
-                textScaleFactor: .8,
-              ),
-            ),
-          ),
-        ),
+        // title: ConstrainedBox(
+        //   constraints: BoxConstraints(
+        //     maxWidth: MediaQuery.of(context).size.width - 192,
+        //   ),
+        //   child: Container(
+        //     decoration: BoxDecoration(
+        //       color: Theme.of(context).brightness == Brightness.light
+        //           ? Colors.white70
+        //           : Colors.black87,
+        //     ),
+        //     child: Padding(
+        //       padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+        //       child: Text(
+        //         movie.title,
+        //         textScaleFactor: .8,
+        //       ),
+        //     ),
+        //   ),
+        // ),
         background: movie.poster_path != null
             ? Hero(
                 tag: movie.id,

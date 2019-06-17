@@ -77,7 +77,6 @@ class _FilterScreenState extends State<FilterScreen> {
     // }
 
     return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
         title: Text('Filter Options'),
         elevation: 0,
