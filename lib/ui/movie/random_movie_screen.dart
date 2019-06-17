@@ -108,7 +108,14 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
                               fit: BoxFit.cover,
                             ),
                           )
-                        : Container(),
+                        : Center(
+                            child: Text(
+                              'No Movie Poster',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                     Positioned(
                       left: 0,
                       bottom: 0,

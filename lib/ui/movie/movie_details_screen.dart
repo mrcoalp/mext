@@ -5,7 +5,7 @@ import 'package:MEXT/data/models/movie_info.dart';
 import 'package:MEXT/data/repositories/movie_details_repository.dart';
 import 'package:MEXT/ui/error_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:youtube_player/youtube_player.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MovieDetailsScreen extends StatefulWidget {
@@ -92,15 +92,35 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 Text('Runtime: ${_movieInfo.runtime} mins'),
                                 SizedBox(height: 20),
                                 for (String t in _trailers)
-                                  YoutubePlayer(
-                                    context: context,
-                                    source: t,
-                                    quality: YoutubeQuality.MEDIUM,
-                                    autoPlay: false,
+                                  // TrailerThumbnail(
+                                  //   t,
+                                  //   () async {
+                                  //     await _launchURL(
+                                  //         'https://www.youtube.com/watch?v=$t');
+                                  //   },
+                                  // ),
+                                  YoutubeScaffold(
+                                    child: YoutubePlayer(
+                                      key: Key(t),
+                                      context: context,
+                                      videoId: t,
+                                      autoPlay: false,
+                                      showVideoProgressIndicator: true,
+                                      thumbnailUrl:
+                                          'https://i3.ytimg.com/vi/$t/mqdefault.jpg',
+                                      videoProgressIndicatorColor:
+                                          Theme.of(context).accentColor,
+                                      progressColors: ProgressColors(
+                                        playedColor:
+                                            Theme.of(context).accentColor,
+                                        handleColor:
+                                            Theme.of(context).accentColor,
+                                      ),
+                                    ),
                                   ),
                                 SizedBox(height: 10),
                                 RaisedButton(
-                                  color: Colors.yellow[700],
+                                  color: Colors.amber,
                                   child: Text('IMDB'),
                                   onPressed: () => _launchURL(
                                       'https://www.imdb.com/title/${_movieInfo.imdb_id}'),
@@ -203,13 +223,60 @@ class MovieDetailsAppBar extends StatelessWidget {
             ),
           ),
         ),
-        background: Hero(
-          tag: movie.id,
-          child: Image.network(
-            '$kTMDBimgPath${movie.poster_path}',
-            fit: BoxFit.cover,
+        background: movie.poster_path != null
+            ? Hero(
+                tag: movie.id,
+                child: Image.network(
+                  '$kTMDBimgPath${movie.poster_path}',
+                  fit: BoxFit.cover,
+                ),
+              )
+            : Center(
+                child: Text(
+                  'No Movie Poster',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+      ),
+    );
+  }
+}
+
+class TrailerThumbnail extends StatelessWidget {
+  final String videoID;
+  final Function onTap;
+
+  TrailerThumbnail(this.videoID, this.onTap);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8, bottom: 8),
+      child: Container(
+        height: 100,
+        child: Center(
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              color: Colors.white60,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Icon(
+                Icons.play_arrow,
+                color: Colors.black,
+              ),
+            ),
           ),
         ),
+        decoration: BoxDecoration(
+            image: DecorationImage(
+          image:
+              NetworkImage('https://img.youtube.com/vi/$videoID/mqdefault.jpg'),
+          fit: BoxFit.cover,
+        )),
       ),
     );
   }
