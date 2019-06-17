@@ -5,7 +5,6 @@ import 'package:MEXT/data/models/movie_info.dart';
 import 'package:MEXT/data/repositories/movie_details_repository.dart';
 import 'package:MEXT/ui/error_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MovieDetailsScreen extends StatefulWidget {
@@ -107,25 +106,6 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                           'https://www.youtube.com/watch?v=$t');
                                     },
                                   ),
-                                // YoutubeScaffold(
-                                //   child: YoutubePlayer(
-                                //     key: Key(t),
-                                //     context: context,
-                                //     videoId: t,
-                                //     autoPlay: false,
-                                //     showVideoProgressIndicator: true,
-                                //     thumbnailUrl:
-                                //         'https://i3.ytimg.com/vi/$t/mqdefault.jpg',
-                                //     videoProgressIndicatorColor:
-                                //         Theme.of(context).accentColor,
-                                //     progressColors: ProgressColors(
-                                //       playedColor:
-                                //           Theme.of(context).accentColor,
-                                //       handleColor:
-                                //           Theme.of(context).accentColor,
-                                //     ),
-                                //   ),
-                                // ),
                                 SizedBox(height: 10),
                                 Center(
                                   child: Text(
@@ -300,7 +280,7 @@ class TrailerThumbnail extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                   image: DecorationImage(
                     image: NetworkImage(
-                        'https://img.youtube.com/vi/$videoID/mqdefault.jpg'),
+                        'https://img.youtube.com/vi/$videoID/0.jpg'),
                     fit: BoxFit.cover,
                   )),
             ),

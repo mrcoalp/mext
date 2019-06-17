@@ -464,20 +464,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.15"
-  youtube_player_flutter:
-    dependency: "direct main"
-    description:
-      name: youtube_player_flutter
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.0-beta.4"
-  ytview:
-    dependency: transitive
-    description:
-      name: ytview
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.8-beta.1"
 sdks:
   dart: ">=2.3.0 <3.0.0"
   flutter: ">=1.5.0 <2.0.0"
