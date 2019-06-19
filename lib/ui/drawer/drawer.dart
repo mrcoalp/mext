@@ -1,20 +1,32 @@
+import 'package:MEXT/blocs/auth_bloc.dart';
 import 'package:MEXT/ui/auth/login_register_screen.dart';
 import 'package:MEXT/ui/movie_tabs.dart';
+import 'package:MEXT/ui/profile/profile.dart';
 import 'package:MEXT/ui/tv_tabs.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DrawerMEXT extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final AuthBloc _auth = Provider.of<AuthBloc>(context);
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          DrawerHeader(
-            child: Text('Drawer Header'),
-            decoration: BoxDecoration(
-              color: Theme.of(context).accentColor,
+          SafeArea(
+            child: DrawerHeader(
+              child: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/img/mext_logo_NB.png'),
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
             ),
           ),
           ListTile(
@@ -26,11 +38,16 @@ class DrawerMEXT extends StatelessWidget {
                 size: 16,
               ),
             ),
-            title: Text('Login / Register'),
+            title: Text(_auth.userId == null ? 'Login / Register' : 'Profile'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => LoginRegisterScreen()));
+
+              if (_auth.userId == null)
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => LoginRegisterScreen()));
+              else
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => ProfileScreen()));
             },
           ),
           ListTile(
@@ -65,6 +82,23 @@ class DrawerMEXT extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => TVTabs()));
             },
           ),
+          _auth.userId != null
+              ? Center(
+                  child: RaisedButton(
+                    color: Theme.of(context).accentColor,
+                    textColor: Colors.white,
+                    child: Text('Logout'),
+                    onPressed: () async {
+                      SharedPreferences preferences =
+                          await SharedPreferences.getInstance();
+                      if (await preferences.clear()) {
+                        _auth.logout();
+                        Navigator.of(context).pop();
+                      }
+                    },
+                  ),
+                )
+              : Container(),
         ],
       ),
     );

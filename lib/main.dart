@@ -1,3 +1,4 @@
+import 'package:MEXT/blocs/auth_bloc.dart';
 import 'package:MEXT/blocs/movies_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:MEXT/ui/movie_tabs.dart';
@@ -22,6 +23,9 @@ class _MEXTState extends State<MEXT> {
       providers: [
         ChangeNotifierProvider<MoviesBloc>.value(
           value: MoviesBloc(),
+        ),
+        ChangeNotifierProvider<AuthBloc>.value(
+          value: AuthBloc(),
         )
       ],
       child: MaterialApp(

@@ -40,10 +40,16 @@ class WebClient {
     return jsonDecode(res.body);
   }
 
-  Future<dynamic> post(String url, dynamic body, [String token]) async {
-    print('GET $url TOKEN $token');
+  Future<dynamic> post(String url, Map<String, dynamic> body,
+      [String token]) async {
+    print('GET $url TOKEN $token BODY ${jsonEncode(body)}');
 
-    final http.Response res = await http.post(url, body: body);
+    var headers = token != null
+        ? {"Authorization": "Bearer $token", "Content-Type": "application/json"}
+        : {"Content-Type": "application/json"};
+
+    final http.Response res =
+        await http.post(url, body: jsonEncode(body), headers: headers);
 
     print('code: ${res.statusCode}\nheaders: ${res.headers}\nres: ${res.body}');
 

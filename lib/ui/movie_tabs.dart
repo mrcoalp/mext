@@ -25,6 +25,12 @@ class MovieTabs extends StatelessWidget {
             ),
             Tab(
               icon: Icon(
+                FontAwesomeIcons.search,
+                size: 16,
+              ),
+            ),
+            Tab(
+              icon: Icon(
                 FontAwesomeIcons.film,
                 size: 16,
               ),
@@ -35,20 +41,14 @@ class MovieTabs extends StatelessWidget {
                 size: 16,
               ),
             ),
-            Tab(
-              icon: Icon(
-                FontAwesomeIcons.user,
-                size: 16,
-              ),
-            ),
           ],
         ),
         body: TabBarView(
           children: <Widget>[
             RandomMovieScreen(),
+            Icon(FontAwesomeIcons.search),
             Icon(FontAwesomeIcons.film),
             Icon(FontAwesomeIcons.heart),
-            Icon(FontAwesomeIcons.user),
           ],
         ),
       ),

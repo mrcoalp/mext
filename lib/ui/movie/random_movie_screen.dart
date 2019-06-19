@@ -1,3 +1,4 @@
+import 'package:MEXT/blocs/auth_bloc.dart';
 import 'package:MEXT/blocs/movies_bloc.dart';
 import 'package:MEXT/constants.dart';
 import 'package:MEXT/data/models/genre.dart';
@@ -36,6 +37,9 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
   @override
   Widget build(BuildContext context) {
     final MoviesBloc _moviesBloc = Provider.of<MoviesBloc>(context);
+    final AuthBloc _auth = Provider.of<AuthBloc>(context);
+
+    print(_auth.refreshToken);
 
     if (_moviesBloc.currentMovie == null)
       this._getRandomMovie(_moviesBloc);
