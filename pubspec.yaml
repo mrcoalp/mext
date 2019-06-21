@@ -31,6 +31,7 @@ dependencies:
   url_launcher: ^5.0.3
   shared_preferences: ^0.5.3+1
   flushbar: ^1.7.0
+  image_picker: ^0.6.0+10
 
 dev_dependencies:
   flutter_test:

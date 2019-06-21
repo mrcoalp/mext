@@ -1,4 +1,5 @@
 import 'package:MEXT/ui/drawer/drawer.dart';
+import 'package:MEXT/ui/search/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:MEXT/ui/movie/random_movie_screen.dart';
@@ -46,7 +47,7 @@ class MovieTabs extends StatelessWidget {
         body: TabBarView(
           children: <Widget>[
             RandomMovieScreen(),
-            Icon(FontAwesomeIcons.search),
+            SearchScreen(),
             Icon(FontAwesomeIcons.film),
             Icon(FontAwesomeIcons.heart),
           ],

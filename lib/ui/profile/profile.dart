@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:MEXT/blocs/auth_bloc.dart';
 import 'package:MEXT/data/models/user.dart';
 import 'package:MEXT/data/repositories/user_repository.dart';
@@ -6,6 +9,7 @@ import 'package:MEXT/ui/profile/view_picture_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:MEXT/.env.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -34,6 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _user = response.user;
       await a.initOrClear();
       a.user = response.user;
+      imageCache.clear();
     }
 
     setState(() => _loading = false);
@@ -85,7 +90,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           )
                         : Column(
                             children: <Widget>[
-                              ProfilePicture(_user),
+                              ProfilePicture(_user, _auth, _getUserDetails),
+                              SizedBox(height: 20),
+                              Text(_user.name ?? ''),
+                              SizedBox(height: 10),
+                              Text(_user.username ?? ''),
+                              SizedBox(height: 10),
+                              Text(_user.email ?? ''),
                             ],
                           ),
               ],
@@ -97,28 +108,93 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-class ProfilePicture extends StatelessWidget {
+class ProfilePicture extends StatefulWidget {
   final User user;
+  final AuthBloc ab;
+  final Function update;
 
-  ProfilePicture(this.user);
+  ProfilePicture(this.user, this.ab, this.update);
+
+  @override
+  _ProfilePictureState createState() => _ProfilePictureState();
+}
+
+class _ProfilePictureState extends State<ProfilePicture> {
+  bool _loading = false;
+
+  Future<String> _upload(File image) async {
+    setState(() => _loading = true);
+
+    List<int> imageBytes = await image.readAsBytes();
+    print(imageBytes);
+    String b64image = base64Encode(imageBytes);
+
+    final _userRepository = new UserRepository();
+
+    final res = await _userRepository.updateProfilePicture(
+        widget.ab.userId, widget.ab.token, b64image);
+
+    setState(() => _loading = false);
+
+    return res;
+  }
+
+  Future<String> _uploadFromGallery() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+
+    if (image == null) return null;
+
+    return await _upload(image);
+  }
+
+  Future<String> _uploadFromCamera() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.camera);
+
+    if (image == null) return null;
+
+    return await _upload(image);
+  }
 
   _showModal(BuildContext ctx) {
     showModalBottomSheet<void>(
         context: ctx,
         builder: (BuildContext context) {
-          return new Column(
+          return Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              new ListTile(
+              ListTile(
                 leading: new Icon(Icons.photo),
-                title: new Text('View Picture'),
+                title: new Text('View picture'),
                 onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => ViewPictureScreen(user))),
+                    builder: (context) => ViewPictureScreen(widget.user))),
               ),
-              new ListTile(
+              ListTile(
+                leading: new Icon(Icons.photo_library),
+                title: new Text('New picture from gallery'),
+                onTap: () async {
+                  Navigator.of(context).pop();
+                  String res = await _uploadFromGallery();
+
+                  if (res != null) {
+                    this
+                        .widget
+                        .update(widget.ab.userId, widget.ab.token, widget.ab);
+                  }
+                },
+              ),
+              ListTile(
                 leading: new Icon(Icons.photo_camera),
-                title: new Text('Select New Picture'),
-                onTap: () => null,
+                title: new Text('New picture from camera'),
+                onTap: () async {
+                  Navigator.of(context).pop();
+                  String res = await _uploadFromCamera();
+
+                  if (res != null) {
+                    this
+                        .widget
+                        .update(widget.ab.userId, widget.ab.token, widget.ab);
+                  }
+                },
               ),
             ],
           );
@@ -128,30 +204,35 @@ class ProfilePicture extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: MediaQuery.of(context).size.width / 3,
-      child: AspectRatio(
-        aspectRatio: 1 / 1,
-        child: GestureDetector(
-          onTap: () => _showModal(context),
-          child: Material(
-            elevation: 5,
-            color: Colors.transparent,
-            child: Container(
-              child: Hero(
-                tag: user.id,
-                child: Image.network('${Config.API_URL}/${user.profilePic}'),
+      width: MediaQuery.of(context).size.width / 2.5,
+      child: _loading
+          ? Center(
+              child: CircularProgressIndicator(
+                valueColor:
+                    AlwaysStoppedAnimation(Theme.of(context).accentColor),
               ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(
-                  color: Theme.of(context).accentColor,
-                  width: 2,
+            )
+          : GestureDetector(
+              onTap: () => _showModal(context),
+              child: AspectRatio(
+                aspectRatio: 1 / 1,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(100),
+                    border: Border.all(
+                      color: Theme.of(context).accentColor,
+                      width: 2,
+                    ),
+                    image: DecorationImage(
+                      image: NetworkImage(
+                        '${Config.API_URL}/${widget.user.profilePic}',
+                      ),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
-      ),
     );
   }
 }

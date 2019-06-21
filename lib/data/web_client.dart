@@ -8,7 +8,7 @@ class WebClient {
   const WebClient();
 
   Future<dynamic> refreshToken(String url, String token, Function method,
-      [Map<String, dynamic> body]) async {
+      [dynamic body]) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String refreshToken = prefs.getString('refreshToken');
@@ -69,8 +69,7 @@ class WebClient {
     return jsonDecode(res.body);
   }
 
-  Future<dynamic> post(String url, Map<String, dynamic> body,
-      [String token]) async {
+  Future<dynamic> post(String url, dynamic body, [String token]) async {
     print('POST $url TOKEN $token BODY ${jsonEncode(body)}');
 
     var headers = token != null

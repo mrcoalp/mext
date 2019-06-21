@@ -10,13 +10,11 @@ class ViewPictureScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Stack(
         children: <Widget>[
           Center(
-            child: Hero(
-              tag: user.id,
-              child: Image.network('${Config.API_URL}/${user.profilePic}'),
-            ),
+            child: Image.network('${Config.API_URL}/${user.profilePic}'),
           ),
           SafeArea(
             child: CircleAvatar(

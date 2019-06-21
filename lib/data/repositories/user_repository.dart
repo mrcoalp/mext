@@ -18,4 +18,16 @@ class UserRepository {
       return new UserResponse.withError(e.toString());
     }
   }
+
+  Future<String> updateProfilePicture(
+      int id, String token, String b64image) async {
+    String uri = '${Config.API_URL}/users/$id/profilepicture';
+    try {
+      var response = await webClient.post(uri, b64image, token);
+      return response['message'] as String;
+    } catch (e) {
+      print(e.toString());
+      return e.toString();
+    }
+  }
 }
