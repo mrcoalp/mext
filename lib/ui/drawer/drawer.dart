@@ -3,6 +3,7 @@ import 'package:MEXT/ui/auth/login_register_screen.dart';
 import 'package:MEXT/ui/movie_tabs.dart';
 import 'package:MEXT/ui/profile/profile.dart';
 import 'package:MEXT/ui/tv_tabs.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +20,7 @@ class DrawerMEXT extends StatelessWidget {
         children: <Widget>[
           SafeArea(
             child: DrawerHeader(
+              padding: const EdgeInsets.all(30),
               child: Container(
                 decoration: BoxDecoration(
                   image: DecorationImage(
@@ -84,18 +86,25 @@ class DrawerMEXT extends StatelessWidget {
           ),
           _auth.userId != null
               ? Center(
-                  child: RaisedButton(
-                    color: Theme.of(context).accentColor,
-                    textColor: Colors.white,
-                    child: Text('Logout'),
-                    onPressed: () async {
-                      SharedPreferences preferences =
-                          await SharedPreferences.getInstance();
-                      if (await preferences.clear()) {
-                        _auth.logout();
-                        Navigator.of(context).pop();
-                      }
-                    },
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 20, bottom: 20),
+                    child: RaisedButton(
+                      color: Theme.of(context).accentColor,
+                      textColor: Colors.white,
+                      child: Text('Logout'),
+                      onPressed: () async {
+                        SharedPreferences preferences =
+                            await SharedPreferences.getInstance();
+                        if (await preferences.clear()) {
+                          _auth.logout();
+                          Navigator.of(context).pop();
+                          Flushbar(
+                            message: 'Logged out',
+                            duration: Duration(seconds: 2),
+                          )..show(context);
+                        }
+                      },
+                    ),
                   ),
                 )
               : Container(),

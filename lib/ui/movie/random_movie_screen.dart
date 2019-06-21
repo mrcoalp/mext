@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:MEXT/blocs/auth_bloc.dart';
 import 'package:MEXT/blocs/movies_bloc.dart';
 import 'package:MEXT/constants.dart';
@@ -254,6 +256,7 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
     var response = await rndMovie.getMovieAndGenres();
     if (response.hasError) {
       _error = response.error;
+      mb.currentMovie = new Movie.empty();
     } else {
       _error = '';
       this._movie = response.movie;

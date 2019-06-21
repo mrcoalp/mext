@@ -3,6 +3,7 @@ import 'package:MEXT/data/repositories/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flushbar/flushbar.dart';
 
 enum Screen { LOGIN, REGISTER }
 
@@ -14,9 +15,11 @@ class LoginRegisterScreen extends StatefulWidget {
 class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
   Screen _screen = Screen.LOGIN;
   bool _loading = false;
+  String _msg;
 
   void _changeScreen() {
     this._screen = _screen == Screen.LOGIN ? Screen.REGISTER : Screen.LOGIN;
+    _msg = null;
     setState(() {});
   }
 
@@ -27,6 +30,9 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
     var response = await auth.login(user, password);
 
     if (response.hasError) {
+      FocusScope.of(context).requestFocus(new FocusNode());
+      var error = response.error.split(':');
+      _msg = error.last.toUpperCase();
     } else {
       ab.userId = response.userId;
       ab.token = response.token;
@@ -38,12 +44,35 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
       await prefs.setString('refreshToken', ab.refreshToken);
 
       Navigator.of(context).pop();
+
+      Flushbar(
+        message: 'Logged in',
+        duration: Duration(seconds: 2),
+      )..show(context);
     }
 
     setState(() => _loading = false);
   }
 
-  void _register(String name, String username, String email, String password) {}
+  Future<void> _register(
+      String name, String username, String email, String password) async {
+    setState(() => _loading = true);
+
+    final auth = new AuthRepository();
+    var response = await auth.register(name, username, email, password);
+
+    if (response.hasError) {
+      FocusScope.of(context).requestFocus(new FocusNode());
+      var error = response.error.split(':');
+      _msg = error.last.toUpperCase();
+    } else {
+      _screen = Screen.LOGIN;
+      _msg =
+          '${response.message.toUpperCase()}\n${response.user.username} proceed to login';
+    }
+
+    setState(() => _loading = false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,15 +93,35 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
       body: Stack(
         children: <Widget>[
           BackGround(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              _msg != null
+                  ? Container(
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 10, bottom: 10),
+                        child: Text(
+                          '$_msg',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    )
+                  : Container(),
+            ],
+          ),
           Center(
             child: Container(
               width: MediaQuery.of(context).size.width / 1.3,
-              height: MediaQuery.of(context).size.width / 1.3,
+              height: MediaQuery.of(context).size.height / 1.5,
               child: Card(
                 elevation: 10,
                 child: _screen == Screen.LOGIN
                     ? Login(_changeScreen, _login)
-                    : Register(_changeScreen),
+                    : Register(_changeScreen, _register),
               ),
             ),
           ),
@@ -101,12 +150,12 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     final AuthBloc _ab = Provider.of<AuthBloc>(context);
 
-    final _email = TextField(
+    final _username = TextField(
       controller: _userCtrl,
       keyboardType: TextInputType.text,
       cursorColor: Colors.teal,
       decoration: InputDecoration(
-        hintText: 'username or email',
+        hintText: 'username',
       ),
     );
 
@@ -120,71 +169,209 @@ class _LoginState extends State<Login> {
       obscureText: true,
     );
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(left: 15, right: 15),
-          child: _email,
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 15, right: 15),
-          child: _password,
-        ),
-        Text(
-          '$_errorLogin',
-          style: TextStyle(
-            color: Colors.red,
+    return Center(
+      child: ListView(
+        shrinkWrap: true,
+        padding: const EdgeInsets.all(20.0),
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left: 15, right: 15),
+            child: _username,
           ),
-        ),
-        RaisedButton(
-          color: Theme.of(context).accentColor,
-          textColor: Colors.white,
-          child: Text('Login'),
-          onPressed: () {
-            if (_userCtrl.text.isNotEmpty && _passwordCtrl.text.isNotEmpty)
-              widget.login(_userCtrl.text, _passwordCtrl.text, _ab);
-            else
-              setState(() => _errorLogin = '*all fields mandatory');
-          },
-        ),
-        SizedBox(
-          height: 5,
-        ),
-        Text('Don\'t have an account?'),
-        InkWell(
-          onTap: widget.onPressed,
-          child: Text(
-            'Register',
+          Padding(
+            padding: const EdgeInsets.only(left: 15, right: 15),
+            child: _password,
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Text(
+            '$_errorLogin',
+            textAlign: TextAlign.center,
             style: TextStyle(
-              color: Theme.of(context).accentColor,
+              color: Colors.red,
             ),
           ),
-        ),
-        SizedBox(
-          height: 5,
-        ),
-      ],
+          SizedBox(
+            height: 5,
+          ),
+          RaisedButton(
+            color: Theme.of(context).accentColor,
+            textColor: Colors.white,
+            child: Text('Login'),
+            onPressed: () {
+              if (_userCtrl.text.isNotEmpty && _passwordCtrl.text.isNotEmpty)
+                widget.login(_userCtrl.text, _passwordCtrl.text, _ab);
+              else
+                setState(() => _errorLogin = '*all fields mandatory');
+            },
+          ),
+          SizedBox(
+            height: 15,
+          ),
+          Text(
+            'Don\'t have an account?',
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          InkWell(
+            onTap: widget.onPressed,
+            child: Text(
+              'Register',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Theme.of(context).accentColor,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
-class Register extends StatelessWidget {
-  final Function onPressed;
+class Register extends StatefulWidget {
+  final Function onPressed, register;
 
-  Register(this.onPressed);
+  Register(this.onPressed, this.register);
+
+  @override
+  _RegisterState createState() => _RegisterState();
+}
+
+class _RegisterState extends State<Register> {
+  var _nameCtrl = new TextEditingController();
+  var _usernameCtrl = new TextEditingController();
+  var _emailCtrl = new TextEditingController();
+  var _passwordCtrl = new TextEditingController();
+  String _errorRegister = '';
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: <Widget>[
-        Text('data'),
-        RaisedButton(
-          child: Text('data'),
-          onPressed: onPressed,
-        )
-      ],
+    final _name = TextField(
+      controller: _nameCtrl,
+      keyboardType: TextInputType.text,
+      cursorColor: Colors.teal,
+      decoration: InputDecoration(
+        hintText: 'name (optional)',
+      ),
+    );
+
+    final _username = TextField(
+      controller: _usernameCtrl,
+      keyboardType: TextInputType.text,
+      cursorColor: Colors.teal,
+      decoration: InputDecoration(
+        hintText: 'username',
+      ),
+    );
+
+    final _email = TextField(
+      controller: _emailCtrl,
+      keyboardType: TextInputType.text,
+      cursorColor: Colors.teal,
+      decoration: InputDecoration(
+        hintText: 'email',
+      ),
+    );
+
+    final _password = TextField(
+      controller: _passwordCtrl,
+      keyboardType: TextInputType.text,
+      cursorColor: Colors.teal,
+      decoration: InputDecoration(
+        hintText: 'password',
+      ),
+      obscureText: true,
+    );
+
+    bool _isEmail(String em) {
+      String p =
+          r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+
+      RegExp regExp = new RegExp(p);
+
+      return regExp.hasMatch(em);
+    }
+
+    return Center(
+      child: ListView(
+        shrinkWrap: true,
+        padding: const EdgeInsets.all(20.0),
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left: 15, right: 15),
+            child: _name,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 15, right: 15),
+            child: _username,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 15, right: 15),
+            child: _email,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 15, right: 15),
+            child: _password,
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Text(
+            '$_errorRegister',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.red,
+            ),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          RaisedButton(
+            color: Theme.of(context).accentColor,
+            textColor: Colors.white,
+            child: Text('Register'),
+            onPressed: () {
+              if (!_isEmail(_emailCtrl.text))
+                setState(() => _errorRegister = '*invalid email');
+              else if (_usernameCtrl.text.isNotEmpty &&
+                  _emailCtrl.text.isNotEmpty &&
+                  _passwordCtrl.text.isNotEmpty)
+                widget.register(_nameCtrl.text, _usernameCtrl.text,
+                    _emailCtrl.text, _passwordCtrl.text);
+              else
+                setState(() =>
+                    _errorRegister = '*username, email and password mandatory');
+            },
+          ),
+          SizedBox(
+            height: 15,
+          ),
+          Text(
+            'Already have an account?',
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          InkWell(
+            onTap: widget.onPressed,
+            child: Text(
+              'Login',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Theme.of(context).accentColor,
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+        ],
+      ),
     );
   }
 }
