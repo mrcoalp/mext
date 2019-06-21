@@ -86,7 +86,7 @@ class _MovieHistoryScreenState extends State<MovieHistoryScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                      '${m.release_date.replaceRange(4, m.release_date.length, '')}, ${m.vote_average}'),
+                      '${m.release_date != '' ? m.release_date.replaceRange(4, m.release_date.length, '') : ''}, ${m.vote_average}'),
                   SizedBox(
                     width: 2,
                   ),

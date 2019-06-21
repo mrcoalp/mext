@@ -18,6 +18,8 @@ class _SearchScreenState extends State<SearchScreen> {
   int _page = 1;
   int _totalPages = 1;
 
+  //TODO(marco): implement pagination
+
   Future<void> _searchMovies(String query) async {
     setState(() => _loading = true);
 
@@ -52,6 +54,8 @@ class _SearchScreenState extends State<SearchScreen> {
       body: CustomScrollView(
         slivers: <Widget>[
           SliverAppBar(
+            floating: true,
+            snap: true,
             title: _search,
             actions: <Widget>[
               _loading
@@ -92,7 +96,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       tag: m.id,
                       child: Image.network('$kTMDBimgPath${m.poster_path}'),
                     )
-                  : Container(),
+                  : SizedBox(),
               title: Text(
                 m.title,
                 style: TextStyle(fontWeight: FontWeight.bold),
@@ -101,7 +105,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                      '${m.release_date.replaceRange(4, m.release_date.length, '')}, ${m.vote_average}'),
+                      '${m.release_date != '' ? m.release_date.replaceRange(4, m.release_date.length, '') : ''}, ${m.vote_average}'),
                   SizedBox(
                     width: 2,
                   ),

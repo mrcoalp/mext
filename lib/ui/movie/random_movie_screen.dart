@@ -173,7 +173,7 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
                               ),
                               SizedBox(height: 5),
                               Text(
-                                  '${_movie.release_date.replaceRange(4, _movie.release_date.length, '')}'),
+                                  '${_movie.release_date != '' ? _movie.release_date.replaceRange(4, _movie.release_date.length, '') : ''}'),
                               SizedBox(height: 5),
                               Text(_genresString),
                               SizedBox(height: 5),
