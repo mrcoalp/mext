@@ -246,6 +246,7 @@ class _RegisterState extends State<Register> {
   var _usernameCtrl = new TextEditingController();
   var _emailCtrl = new TextEditingController();
   var _passwordCtrl = new TextEditingController();
+  var _passwordConfirmCtrl = new TextEditingController();
   String _errorRegister = '';
 
   @override
@@ -287,6 +288,16 @@ class _RegisterState extends State<Register> {
       obscureText: true,
     );
 
+    final _passwordConfirm = TextField(
+      controller: _passwordConfirmCtrl,
+      keyboardType: TextInputType.text,
+      cursorColor: Colors.teal,
+      decoration: InputDecoration(
+        hintText: 'confirm password',
+      ),
+      obscureText: true,
+    );
+
     bool _isEmail(String em) {
       String p =
           r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
@@ -317,6 +328,10 @@ class _RegisterState extends State<Register> {
             padding: const EdgeInsets.only(left: 15, right: 15),
             child: _password,
           ),
+          Padding(
+            padding: const EdgeInsets.only(left: 15, right: 15),
+            child: _passwordConfirm,
+          ),
           SizedBox(
             height: 10,
           ),
@@ -337,6 +352,8 @@ class _RegisterState extends State<Register> {
             onPressed: () {
               if (!_isEmail(_emailCtrl.text))
                 setState(() => _errorRegister = '*invalid email');
+              else if (_passwordCtrl.text != _passwordConfirmCtrl.text)
+                setState(() => _errorRegister = '*passwords do not match');
               else if (_usernameCtrl.text.isNotEmpty &&
                   _emailCtrl.text.isNotEmpty &&
                   _passwordCtrl.text.isNotEmpty)

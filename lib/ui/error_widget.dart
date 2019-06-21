@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CustomErrorWidget extends StatelessWidget {
   final String error;
-  const CustomErrorWidget({this.error});
+  const CustomErrorWidget({@required this.error});
   @override
   Widget build(BuildContext context) {
     return Column(

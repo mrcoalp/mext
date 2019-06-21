@@ -1,3 +1,3 @@
 class Config {
-  static const API_URL = 'http://94.63.126.14/mext/api';
+  static const API_URL = 'http://192.168.3.72/mext/api';
 }

@@ -38,20 +38,4 @@ class Movie {
 
   factory Movie.fromJson(Map<String, dynamic> json) => _$MovieFromJson(json);
   Map<String, dynamic> toJson() => _$MovieToJson(this);
-
-  Movie.empty()
-      : this.vote_count = 0,
-        this.id = 0,
-        this.video = false,
-        this.vote_average = 0,
-        this.title = '',
-        this.popularity = 0,
-        this.poster_path = '',
-        this.original_language = '',
-        this.original_title = '',
-        this.backdrop_path = '',
-        this.adult = false,
-        this.overview = '',
-        this.release_date = '',
-        this.genres = [];
 }

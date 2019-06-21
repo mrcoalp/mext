@@ -43,7 +43,7 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
 
     print(_auth.refreshToken);
 
-    if (_moviesBloc.currentMovie == null)
+    if (_moviesBloc.currentMovie == null && _error == '')
       this._getRandomMovie(_moviesBloc);
     else {
       _movie = _moviesBloc.currentMovie;
@@ -256,7 +256,6 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
     var response = await rndMovie.getMovieAndGenres();
     if (response.hasError) {
       _error = response.error;
-      mb.currentMovie = new Movie.empty();
     } else {
       _error = '';
       this._movie = response.movie;

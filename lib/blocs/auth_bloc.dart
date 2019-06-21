@@ -9,10 +9,10 @@ class AuthBloc extends ChangeNotifier {
   User _user;
 
   AuthBloc() {
-    this._initOrClear();
+    this.initOrClear();
   }
 
-  Future<void> _initOrClear() async {
+  Future<void> initOrClear() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     this._userId = prefs.getInt('userId');
     this._token = prefs.getString('token');
@@ -20,7 +20,8 @@ class AuthBloc extends ChangeNotifier {
   }
 
   void logout() {
-    _initOrClear();
+    initOrClear();
+    _user = null;
     notifyListeners();
   }
 

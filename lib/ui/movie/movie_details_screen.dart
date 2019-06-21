@@ -18,15 +18,18 @@ class MovieDetailsScreen extends StatefulWidget {
 
 class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   final _movieDetails = const MovieDetailsRepository();
-  bool _loading = false;
+  bool _loadingMoreInfo = false;
+  bool _loadingSimilar = false;
   String _error = '';
   List<String> _trailers;
   MovieInfo _movieInfo;
+  List<Movie> _similar;
 
   @override
   void initState() {
     super.initState();
     this._getDetails(widget._movie.id);
+    this._getSimilar(widget._movie.id);
   }
 
   _launchURL(String url) async {
@@ -84,7 +87,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     textAlign: TextAlign.justify,
                   ),
                   SizedBox(height: 10),
-                  _loading
+                  _loadingMoreInfo || _loadingSimilar
                       ? Center(
                           child: CircularProgressIndicator(
                             valueColor: AlwaysStoppedAnimation(
@@ -124,8 +127,31 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                   onPressed: () => _launchURL(
                                       'https://www.imdb.com/title/${_movieInfo.imdb_id}'),
                                 ),
+                                SizedBox(
+                                  height: 30,
+                                ),
+                                _similar.length > 0
+                                    ? Text(
+                                        'Similar Movies',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      )
+                                    : Container(),
+                                _similar.length > 0
+                                    ? Container(
+                                        height: 200,
+                                        child: ListView(
+                                          shrinkWrap: true,
+                                          scrollDirection: Axis.horizontal,
+                                          children: <Widget>[
+                                            for (Movie m in _similar)
+                                              MoviePoster(m),
+                                          ],
+                                        ),
+                                      )
+                                    : Container()
                               ],
-                            )
+                            ),
                 ],
               ),
             ),
@@ -164,7 +190,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
 
   Future<void> _getDetails(int id) async {
     setState(() {
-      _loading = true;
+      _loadingMoreInfo = true;
     });
 
     var trailers = await _movieDetails.getTrailers(id);
@@ -184,8 +210,24 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     }
 
     setState(() {
-      _loading = false;
+      _loadingMoreInfo = false;
     });
+  }
+
+  Future<void> _getSimilar(int id) async {
+    setState(() => _loadingSimilar = true);
+
+    var similar = await _movieDetails.getSimilar(id);
+    if (similar.hasError)
+      _error = similar.error;
+    else {
+      _error = '';
+      _similar = similar.similar;
+
+      print(_similar);
+    }
+
+    setState(() => _loadingSimilar = false);
   }
 }
 
@@ -201,6 +243,14 @@ class MovieDetailsAppBar extends StatelessWidget {
       expandedHeight: (MediaQuery.of(context).size.height / 3) * 2.5,
       floating: false,
       pinned: true,
+      leading: CircleAvatar(
+        backgroundColor: Theme.of(context).primaryColor.withOpacity(0.5),
+        child: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+          color: Theme.of(context).primaryTextTheme.body1.color,
+        ),
+      ),
       flexibleSpace: FlexibleSpaceBar(
         centerTitle: true,
         // title: ConstrainedBox(
@@ -283,6 +333,40 @@ class TrailerThumbnail extends StatelessWidget {
                         'https://img.youtube.com/vi/$videoID/0.jpg'),
                     fit: BoxFit.cover,
                   )),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class MoviePoster extends StatelessWidget {
+  final Movie movie;
+
+  MoviePoster(this.movie);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: GestureDetector(
+        onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => MovieDetailsScreen(movie))),
+        child: Material(
+          elevation: 5,
+          color: Colors.transparent,
+          child: AspectRatio(
+            aspectRatio: 2 / 3,
+            child: Container(
+              width: MediaQuery.of(context).size.width / 3,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4),
+                image: DecorationImage(
+                  image: NetworkImage('$kTMDBimgPath${movie.poster_path}'),
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
           ),
         ),

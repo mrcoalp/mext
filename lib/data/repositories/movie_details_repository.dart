@@ -1,4 +1,5 @@
 import 'package:MEXT/.env.dart';
+import 'package:MEXT/data/models/movie.dart';
 import 'package:MEXT/data/models/movie_info.dart';
 import 'package:MEXT/data/models/movie_info_response.dart';
 import 'package:MEXT/data/models/movie_trailers_response.dart';
@@ -30,6 +31,22 @@ class MovieDetailsRepository {
     } catch (e) {
       print(e.toString());
       return new MovieInfoResponse.withError(e.toString());
+    }
+  }
+
+  Future<SimilarMoviesResponse> getSimilar(int id) async {
+    String uri = '${Config.API_URL}/movies/$id/similar';
+    try {
+      var response = await webClient.get(uri);
+      var similar = new List<Movie>();
+      for (var m in response) {
+        similar.add(new Movie.fromJson(m));
+      }
+
+      return new SimilarMoviesResponse(similar: similar);
+    } catch (e) {
+      print(e.toString());
+      return new SimilarMoviesResponse.withError(e.toString());
     }
   }
 }
