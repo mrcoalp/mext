@@ -1,7 +1,8 @@
-import 'package:MEXT/constants.dart';
 import 'package:MEXT/data/models/movie.dart';
 import 'package:MEXT/data/repositories/search_repository.dart';
-import 'package:MEXT/ui/movie/movie_details_screen.dart';
+import 'package:MEXT/ui/app.dart';
+import 'package:MEXT/ui/buttons.dart';
+import 'package:MEXT/ui/error_widget.dart';
 import 'package:flutter/material.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -18,15 +19,15 @@ class _SearchScreenState extends State<SearchScreen> {
   int _page = 1;
   int _totalPages = 1;
 
-  //TODO(marco): implement pagination
-
-  Future<void> _searchMovies(String query) async {
+  Future<void> _searchMovies(String query, int page) async {
+    _movies = [];
     setState(() => _loading = true);
 
-    final response = await _searchRepository.search(query, 1);
+    final response = await _searchRepository.search(query, page);
     if (response.hasError)
       _error = response.error;
     else {
+      _error = '';
       _movies = response.movies;
       _page = response.page;
       _totalPages = response.totalPages;
@@ -38,7 +39,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     final _search = TextField(
-      autofocus: true,
+      // autofocus: true,
       controller: _searchCtrl,
       keyboardType: TextInputType.text,
       cursorColor: Colors.teal,
@@ -46,9 +47,12 @@ class _SearchScreenState extends State<SearchScreen> {
         hintText: 'search',
       ),
       onSubmitted: (value) {
-        _searchMovies(value);
+        _searchMovies(value, 1);
       },
     );
+
+    Size _size = new Size(
+        MediaQuery.of(context).size.width, AppBar().preferredSize.height);
 
     return Scaffold(
       body: CustomScrollView(
@@ -69,17 +73,94 @@ class _SearchScreenState extends State<SearchScreen> {
                       icon: Icon(Icons.search),
                       onPressed: () {
                         FocusScope.of(context).requestFocus(new FocusNode());
-                        _searchMovies(_searchCtrl.text);
+                        _searchMovies(_searchCtrl.text, 1);
                       },
                     )
             ],
+            bottom: PreferredSize(
+              preferredSize: _size,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8, right: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    AppBarButton(
+                      text: 'Rating',
+                      onPressed: () => _oderByRating(),
+                    ),
+                    AppBarButton(
+                      text: 'Year',
+                      onPressed: () => _oderByYear(),
+                    ),
+                    AppBarButton(
+                      text: 'Name',
+                      onPressed: () => _oderByName(),
+                    )
+                  ],
+                ),
+              ),
+            ),
           ),
-          SliverList(
-            delegate: _results(),
+          _loading
+              ? SliverToBoxAdapter(
+                  child: Center(
+                    child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(
+                            Theme.of(context).accentColor)),
+                  ),
+                )
+              : _error == ''
+                  ? SliverList(delegate: _results())
+                  : SliverToBoxAdapter(
+                      child: CustomErrorWidget(
+                        error: _error,
+                      ),
+                    ),
+          SliverToBoxAdapter(
+            child: _movies.length > 0
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      FlatButton(
+                        child: Text('prev.'),
+                        onPressed: _page > 1
+                            ? () => _searchMovies(_searchCtrl.text, _page - 1)
+                            : null,
+                        textColor: Theme.of(context).accentColor,
+                      ),
+                      FlatButton(
+                        child: Text('next'),
+                        onPressed: _page < _totalPages
+                            ? () => _searchMovies(_searchCtrl.text, _page + 1)
+                            : null,
+                        textColor: Theme.of(context).accentColor,
+                      )
+                    ],
+                  )
+                : Container(),
           )
         ],
       ),
     );
+  }
+
+  _oderByYear() {
+    _movies.sort((a, b) {
+      var dateOfa = a.release_date == '' ? '1111-01-01' : a.release_date;
+      var dateOfb = b.release_date == '' ? '1111-01-01' : b.release_date;
+      return DateTime.parse(dateOfb).compareTo(DateTime.parse(dateOfa));
+    });
+    setState(() {});
+  }
+
+  _oderByRating() {
+    _movies.sort((a, b) => a.vote_average < b.vote_average ? 1 : 0);
+    setState(() {});
+  }
+
+  _oderByName() {
+    _movies.sort((a, b) => a.title.compareTo(b.title));
+    setState(() {});
   }
 
   SliverChildBuilderDelegate _results() {
@@ -87,38 +168,8 @@ class _SearchScreenState extends State<SearchScreen> {
       (context, index) {
         Movie m = _movies[index];
 
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 2, bottom: 2),
-            child: ListTile(
-              leading: m.poster_path != null
-                  ? Hero(
-                      tag: m.id,
-                      child: Image.network('$kTMDBimgPath${m.poster_path}'),
-                    )
-                  : SizedBox(),
-              title: Text(
-                m.title,
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                      '${m.release_date != '' ? m.release_date.replaceRange(4, m.release_date.length, '') : ''}, ${m.vote_average}'),
-                  SizedBox(
-                    width: 2,
-                  ),
-                  Icon(
-                    Icons.star,
-                    size: 12,
-                  ),
-                ],
-              ),
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => MovieDetailsScreen(m))),
-            ),
-          ),
+        return MovieCard(
+          movie: m,
         );
       },
       childCount: _movies.length,

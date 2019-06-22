@@ -1,7 +1,7 @@
 import 'package:MEXT/blocs/movies_bloc.dart';
-import 'package:MEXT/constants.dart';
 import 'package:MEXT/data/models/movie.dart';
-import 'package:MEXT/ui/movie/movie_details_screen.dart';
+import 'package:MEXT/ui/app.dart';
+import 'package:MEXT/ui/buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,40 +15,34 @@ class _MovieHistoryScreenState extends State<MovieHistoryScreen> {
   Widget build(BuildContext context) {
     final MoviesBloc _moviesBloc = Provider.of<MoviesBloc>(context);
     final List<Movie> _history = _moviesBloc.movieHistory;
-    Size _size = new Size(MediaQuery.of(context).size.width, 60);
+    Size _size = new Size(
+        MediaQuery.of(context).size.width, AppBar().preferredSize.height);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).accentColor,
       body: CustomScrollView(
         slivers: <Widget>[
           SliverAppBar(
             title: Text('History'),
-            backgroundColor: Theme.of(context).accentColor,
             floating: true,
             snap: true,
             bottom: PreferredSize(
               preferredSize: _size,
               child: Padding(
                 padding: const EdgeInsets.only(left: 8, right: 8),
-                child: Column(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
-                    Text('Order By'),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        AppBarButtons(
-                          text: 'Rating',
-                          onPressed: () => _oderByRating(_moviesBloc),
-                        ),
-                        AppBarButtons(
-                          text: 'Year',
-                          onPressed: () => _oderByYear(_moviesBloc),
-                        ),
-                        AppBarButtons(
-                          text: 'Name',
-                          onPressed: () => _oderByName(_moviesBloc),
-                        )
-                      ],
+                    AppBarButton(
+                      text: 'Rating',
+                      onPressed: () => _oderByRating(_moviesBloc),
+                    ),
+                    AppBarButton(
+                      text: 'Year',
+                      onPressed: () => _oderByYear(_moviesBloc),
+                    ),
+                    AppBarButton(
+                      text: 'Name',
+                      onPressed: () => _oderByName(_moviesBloc),
                     )
                   ],
                 ),
@@ -68,38 +62,8 @@ class _MovieHistoryScreenState extends State<MovieHistoryScreen> {
       (context, index) {
         Movie m = history[index];
 
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 2, bottom: 2),
-            child: ListTile(
-              leading: m.poster_path != null
-                  ? Hero(
-                      tag: m.id,
-                      child: Image.network('$kTMDBimgPath${m.poster_path}'),
-                    )
-                  : Container(),
-              title: Text(
-                m.title,
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                      '${m.release_date != '' ? m.release_date.replaceRange(4, m.release_date.length, '') : ''}, ${m.vote_average}'),
-                  SizedBox(
-                    width: 2,
-                  ),
-                  Icon(
-                    Icons.star,
-                    size: 12,
-                  ),
-                ],
-              ),
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => MovieDetailsScreen(m))),
-            ),
-          ),
+        return MovieCard(
+          movie: m,
         );
       },
       childCount: history.length,
@@ -108,8 +72,11 @@ class _MovieHistoryScreenState extends State<MovieHistoryScreen> {
 
   _oderByYear(MoviesBloc mb) {
     List<Movie> movies = mb.movieHistory;
-    movies.sort((a, b) => DateTime.parse(b.release_date)
-        .compareTo(DateTime.parse(a.release_date)));
+    movies.sort((a, b) {
+      var dateOfa = a.release_date == '' ? '1111-01-01' : a.release_date;
+      var dateOfb = b.release_date == '' ? '1111-01-01' : b.release_date;
+      return DateTime.parse(dateOfb).compareTo(DateTime.parse(dateOfa));
+    });
     mb.movieHistory = movies;
     setState(() {});
   }
@@ -126,22 +93,5 @@ class _MovieHistoryScreenState extends State<MovieHistoryScreen> {
     movies.sort((a, b) => a.title.compareTo(b.title));
     mb.movieHistory = movies;
     setState(() {});
-  }
-}
-
-class AppBarButtons extends StatelessWidget {
-  final Function onPressed;
-  final String text;
-  AppBarButtons({@required this.onPressed, @required this.text});
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: (MediaQuery.of(context).size.width / 3) - 16,
-      child: RaisedButton(
-        elevation: 5,
-        onPressed: onPressed,
-        child: Text(text),
-      ),
-    );
   }
 }

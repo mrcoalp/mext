@@ -11,8 +11,6 @@ class SearchRepository {
     String uri = '${Config.API_URL}/movies/search?query=$query&page=$page';
     try {
       var response = await webClient.get(uri);
-
-      print(response);
       return new SearchResponse.fromJson(response);
     } catch (e) {
       print(e.toString());

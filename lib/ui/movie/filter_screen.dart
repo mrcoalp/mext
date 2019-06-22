@@ -1,6 +1,7 @@
 import 'package:MEXT/blocs/movies_bloc.dart';
 import 'package:MEXT/constants.dart';
 import 'package:MEXT/data/models/genre.dart';
+import 'package:MEXT/ui/buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -58,35 +59,12 @@ class _FilterScreenState extends State<FilterScreen> {
     _excludeWatched = _moviesBloc.filterExcludeWatched;
     _handleGenresLists(_moviesBloc);
 
-    // if (_moviesBloc.allGenres == null)
-    //   _getGenres(_moviesBloc);
-    // else {
-    //   _allGenres = _moviesBloc.allGenres;
-    //   _withGenres.genres = _moviesBloc.filterWithGenres != ''
-    //       ? _moviesBloc.filterWithGenres.split(',')
-    //       : [];
-    //   _withoutGenres.genres = _moviesBloc.filterWithoutGenres != ''
-    //       ? _moviesBloc.filterWithoutGenres.split(',')
-    //       : [];
-    //   _rating = _moviesBloc.filterRating;
-    //   if (_ratingCtrl.text == '') _ratingCtrl.text = _rating.toString();
-    //   _year = _moviesBloc.filterYear;
-    //   if (_yearCtrl.text == '') _yearCtrl.text = _year.toString();
-    //   _voteCount = _moviesBloc.filterVoteCount;
-    //   if (_voteCountCtrl.text == '')
-    //     _voteCountCtrl.text = _voteCount.toString();
-    //   _excludeWatched = _moviesBloc.filterExcludeWatched;
-    //   _handleGenresLists(_moviesBloc);
-    // }
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Filter Options'),
         elevation: 0,
       ),
       floatingActionButton: RaisedButton(
-        color: Theme.of(context).accentColor,
-        textColor: Theme.of(context).primaryColor,
         child: Text('Update Filters'),
         onPressed: () => Navigator.of(context).pop(),
       ),
@@ -104,13 +82,6 @@ class _FilterScreenState extends State<FilterScreen> {
                   ),
                 ),
               ),
-              // _loading
-              //     ? Center(
-              //         child: CircularProgressIndicator(
-              //           valueColor: AlwaysStoppedAnimation(
-              //               Theme.of(context).primaryColor),
-              //         ),
-              //       ):
               Container(
                 height: 50,
                 child: ListView(
@@ -130,13 +101,6 @@ class _FilterScreenState extends State<FilterScreen> {
                   ),
                 ),
               ),
-              // _loading
-              //     ? Center(
-              //         child: CircularProgressIndicator(
-              //           valueColor: AlwaysStoppedAnimation(
-              //               Theme.of(context).primaryColor),
-              //         ),
-              //       ):
               Container(
                 height: 50,
                 child: ListView(
@@ -242,21 +206,6 @@ class _FilterScreenState extends State<FilterScreen> {
     );
   }
 
-  // Future<void> _getGenres(MoviesBloc mb) async {
-  //   setState(() {
-  //     _loading = true;
-  //   });
-
-  //   _allGenres = await _genresRepository.loadFromTMDB();
-  //   mb.allGenres = _allGenres;
-
-  //   _handleGenresLists(mb);
-
-  //   setState(() {
-  //     _loading = false;
-  //   });
-  // }
-
   void _handleGenresLists(MoviesBloc mb) {
     _withGenresWidget = [];
     _withoutGenresWidget = [];
@@ -331,46 +280,5 @@ class GenresList {
 
   bool contains(int id) {
     return this.genres.contains(id.toString());
-  }
-}
-
-class GenreUnselectedButton extends StatelessWidget {
-  final String genre;
-  final Function selectFunc;
-
-  GenreUnselectedButton({@required this.genre, @required this.selectFunc});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: RaisedButton(
-        elevation: 5,
-        color: Theme.of(context).primaryColor,
-        textColor: Theme.of(context).accentColor,
-        child: Text(genre),
-        onPressed: selectFunc,
-      ),
-    );
-  }
-}
-
-class GenreSelectedButton extends StatelessWidget {
-  final String genre;
-  final Function unselectFunc;
-
-  GenreSelectedButton({@required this.genre, @required this.unselectFunc});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: RaisedButton(
-        color: Theme.of(context).accentColor,
-        textColor: Theme.of(context).primaryColor,
-        child: Text(genre),
-        onPressed: unselectFunc,
-      ),
-    );
   }
 }

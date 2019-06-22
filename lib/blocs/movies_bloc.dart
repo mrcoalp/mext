@@ -15,6 +15,10 @@ class MoviesBloc extends ChangeNotifier {
 
   var movieHistory = new List<Movie>();
 
+  List<Movie> userWatchedMovies;
+  List<Movie> userToWatchMovies;
+  List<Movie> userFavouriteMovies;
+
   Movie get currentMovie => _currentMovie;
 
   set currentMovie(Movie movie) {

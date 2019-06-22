@@ -1,11 +1,19 @@
+import 'package:MEXT/blocs/auth_bloc.dart';
+import 'package:MEXT/blocs/movies_bloc.dart';
 import 'package:MEXT/constants.dart';
 import 'package:MEXT/data/models/genre.dart';
 import 'package:MEXT/data/models/movie.dart';
 import 'package:MEXT/data/models/movie_info.dart';
 import 'package:MEXT/data/repositories/movie_details_repository.dart';
+import 'package:MEXT/data/repositories/user_lists_repository.dart';
 import 'package:MEXT/ui/error_widget.dart';
+import 'package:MEXT/ui/movie_tabs.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share/share.dart';
 
 class MovieDetailsScreen extends StatefulWidget {
   final Movie _movie;
@@ -18,12 +26,14 @@ class MovieDetailsScreen extends StatefulWidget {
 
 class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   final _movieDetails = const MovieDetailsRepository();
+  final _userListsRep = const UserListsRepository();
   bool _loadingMoreInfo = false;
   bool _loadingSimilar = false;
   String _error = '';
   List<String> _trailers;
   MovieInfo _movieInfo;
   List<Movie> _similar;
+  List<Movie> _watched;
 
   @override
   void initState() {
@@ -42,6 +52,13 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final MoviesBloc _moviesBloc = Provider.of<MoviesBloc>(context);
+    final AuthBloc _authBloc = Provider.of<AuthBloc>(context);
+
+    _watched = _moviesBloc.userWatchedMovies != null
+        ? _moviesBloc.userWatchedMovies
+        : [];
+
     String _genresString = '';
     for (Genre g in widget._movie.genres)
       _genresString += _genresString != '' ? ', ${g.name}' : g.name;
@@ -61,6 +78,32 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
                     ),
+                  ),
+                  SizedBox(height: 15),
+                  Row(
+                    children: <Widget>[
+                      IconButton(
+                        icon: Icon(
+                          FontAwesomeIcons.eye,
+                          color: _watched.contains(widget._movie)
+                              ? Theme.of(context).accentColor
+                              : Theme.of(context).textTheme.body1.color,
+                        ),
+                        onPressed: () => _watched.contains(widget._movie)
+                            ? _removeWatched(_authBloc.userId, _authBloc.token,
+                                widget._movie, _moviesBloc)
+                            : _addWatched(_authBloc.userId, _authBloc.token,
+                                widget._movie, _moviesBloc),
+                      ),
+                      IconButton(
+                        icon: Icon(FontAwesomeIcons.film),
+                        onPressed: null,
+                      ),
+                      IconButton(
+                        icon: Icon(FontAwesomeIcons.heart),
+                        onPressed: null,
+                      ),
+                    ],
                   ),
                   SizedBox(height: 15),
                   Row(
@@ -121,15 +164,23 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 _movieInfo.tagline != ''
                                     ? SizedBox(height: 10)
                                     : Container(),
-                                RaisedButton(
-                                  color: Colors.amber,
-                                  child: Text('IMDB'),
-                                  onPressed: () => _launchURL(
-                                      'https://www.imdb.com/title/${_movieInfo.imdb_id}'),
+                                Row(
+                                  children: <Widget>[
+                                    RaisedButton(
+                                      color: Colors.amber,
+                                      child: Text('IMDB'),
+                                      onPressed: () => _launchURL(
+                                          'https://www.imdb.com/title/${_movieInfo.imdb_id}'),
+                                    ),
+                                    SizedBox(width: 10),
+                                    IconButton(
+                                      icon: Icon(Icons.share),
+                                      onPressed: () => Share.share(
+                                          'Check out this movie I discovered on MEXT!: https://www.imdb.com/title/${_movieInfo.imdb_id}'),
+                                    )
+                                  ],
                                 ),
-                                SizedBox(
-                                  height: 30,
-                                ),
+                                SizedBox(height: 30),
                                 _similar.length > 0
                                     ? Text(
                                         'Similar Movies',
@@ -223,12 +274,110 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     else {
       _error = '';
       _similar = similar.similar;
-
-      print(_similar);
     }
 
     setState(() => _loadingSimilar = false);
   }
+
+  Future<void> _addWatched(
+      int id, String token, Movie movie, MoviesBloc mb) async {
+    if (id != null)
+      showDialog(
+          context: context,
+          builder: (ctx) {
+            return AlertDialog(
+              title: Text('Add to watched list?'),
+              content: Text('Add ${movie.title} to watched movies list?'),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('NO'),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                FlatButton(
+                  child: Text('YES'),
+                  onPressed: () async {
+                    final response =
+                        await _userListsRep.addWatched(id, token, movie);
+                    if (response.hasError)
+                      _error = response.error;
+                    else {
+                      _error = '';
+                      mb.userWatchedMovies.add(widget._movie);
+
+                      Navigator.of(context).pop();
+
+                      setState(() {});
+
+                      Flushbar(
+                        message: '${movie.title} added to watched list',
+                        duration: Duration(seconds: 2),
+                      )..show(context);
+                    }
+                  },
+                )
+              ],
+            );
+          });
+    else
+      _showDialogNotLoggedIn();
+  }
+
+  Future<void> _removeWatched(
+      int id, String token, Movie movie, MoviesBloc mb) async {
+    if (id != null)
+      showDialog(
+          context: context,
+          builder: (ctx) {
+            return AlertDialog(
+              title: Text('Remove from watched list?'),
+              content: Text('Remove ${movie.title} from watched movies list?'),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('NO'),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                FlatButton(
+                  child: Text('YES'),
+                  onPressed: () async {
+                    final response =
+                        await _userListsRep.removeWatched(id, token, movie);
+                    if (response.hasError)
+                      _error = response.error;
+                    else {
+                      _error = '';
+                      mb.userWatchedMovies.remove(widget._movie);
+
+                      Navigator.of(context).pop();
+
+                      setState(() {});
+
+                      Flushbar(
+                        message: '${movie.title} removed from watched list',
+                        duration: Duration(seconds: 2),
+                      )..show(context);
+                    }
+                  },
+                )
+              ],
+            );
+          });
+    else
+      _showDialogNotLoggedIn();
+  }
+
+  void _showDialogNotLoggedIn() => showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          content: Text('You must be logged in to save lists'),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('OK'),
+              onPressed: () => Navigator.of(context).pop(),
+            )
+          ],
+        );
+      });
 }
 
 class MovieDetailsAppBar extends StatelessWidget {
@@ -239,7 +388,7 @@ class MovieDetailsAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
-      backgroundColor: Theme.of(context).primaryColor.withOpacity(0.9),
+      backgroundColor: Theme.of(context).primaryColor,
       expandedHeight: (MediaQuery.of(context).size.height / 3) * 2.5,
       floating: false,
       pinned: true,
@@ -251,27 +400,22 @@ class MovieDetailsAppBar extends StatelessWidget {
           color: Theme.of(context).primaryTextTheme.body1.color,
         ),
       ),
+      actions: <Widget>[
+        CircleAvatar(
+          backgroundColor: Theme.of(context).primaryColor.withOpacity(0.5),
+          child: IconButton(
+            icon: Icon(Icons.home),
+            onPressed: () => Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => MovieTabs())),
+            // onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+            //     MaterialPageRoute(builder: (context) => MovieTabs()),
+            //     (Route<dynamic> route) => false),
+            color: Theme.of(context).primaryTextTheme.body1.color,
+          ),
+        ),
+      ],
       flexibleSpace: FlexibleSpaceBar(
         centerTitle: true,
-        // title: ConstrainedBox(
-        //   constraints: BoxConstraints(
-        //     maxWidth: MediaQuery.of(context).size.width - 192,
-        //   ),
-        //   child: Container(
-        //     decoration: BoxDecoration(
-        //       color: Theme.of(context).brightness == Brightness.light
-        //           ? Colors.white70
-        //           : Colors.black87,
-        //     ),
-        //     child: Padding(
-        //       padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-        //       child: Text(
-        //         movie.title,
-        //         textScaleFactor: .8,
-        //       ),
-        //     ),
-        //   ),
-        // ),
         background: movie.poster_path != null
             ? Hero(
                 tag: movie.id,
@@ -358,13 +502,16 @@ class MoviePoster extends StatelessWidget {
           color: Colors.transparent,
           child: AspectRatio(
             aspectRatio: 2 / 3,
-            child: Container(
-              width: MediaQuery.of(context).size.width / 3,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-                image: DecorationImage(
-                  image: NetworkImage('$kTMDBimgPath${movie.poster_path}'),
-                  fit: BoxFit.cover,
+            child: Hero(
+              tag: movie.id,
+              child: Container(
+                width: MediaQuery.of(context).size.width / 3,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  image: DecorationImage(
+                    image: NetworkImage('$kTMDBimgPath${movie.poster_path}'),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),

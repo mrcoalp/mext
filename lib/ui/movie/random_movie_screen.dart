@@ -1,11 +1,10 @@
-import 'dart:io';
-
 import 'package:MEXT/blocs/auth_bloc.dart';
 import 'package:MEXT/blocs/movies_bloc.dart';
 import 'package:MEXT/constants.dart';
 import 'package:MEXT/data/models/genre.dart';
 import 'package:MEXT/data/repositories/randommovie_repository.dart';
 import 'package:MEXT/data/models/movie.dart';
+import 'package:MEXT/data/repositories/user_lists_repository.dart';
 import 'package:MEXT/ui/error_widget.dart';
 import 'package:MEXT/ui/movie/filter_screen.dart';
 import 'package:MEXT/ui/movie/movie_details_screen.dart';
@@ -22,6 +21,8 @@ class RandomMovieScreen extends StatefulWidget {
 class _RandomMovieScreenState extends State<RandomMovieScreen> {
   Movie _movie;
   String _genresString = '';
+  List<Movie> _watched = [];
+  final _userRep = new UserListsRepository();
 
   bool _loading = false;
   String _error = '';
@@ -39,9 +40,7 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
   @override
   Widget build(BuildContext context) {
     final MoviesBloc _moviesBloc = Provider.of<MoviesBloc>(context);
-    final AuthBloc _auth = Provider.of<AuthBloc>(context);
-
-    print(_auth.refreshToken);
+    final AuthBloc _authBloc = Provider.of<AuthBloc>(context);
 
     if (_moviesBloc.currentMovie == null && _error == '')
       this._getRandomMovie(_moviesBloc);
@@ -50,6 +49,16 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
       _genresString = '';
       for (Genre g in _movie.genres)
         _genresString += _genresString != '' ? ', ${g.name}' : g.name;
+    }
+
+    if (_moviesBloc.userWatchedMovies == null &&
+        _error == '' &&
+        _authBloc.userId != null)
+      this._getWatchedMovies(_authBloc.userId, _authBloc.token, _moviesBloc);
+    else {
+      _watched = _moviesBloc.userWatchedMovies == null
+          ? []
+          : _moviesBloc.userWatchedMovies;
     }
 
     return Scaffold(
@@ -132,20 +141,13 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
                           gradient: LinearGradient(
                             begin: Alignment.bottomCenter,
                             end: Alignment.topCenter,
-                            colors:
-                                Theme.of(context).brightness == Brightness.light
-                                    ? [
-                                        Colors.white,
-                                        Colors.white70,
-                                        Colors.white54,
-                                        Colors.transparent
-                                      ]
-                                    : [
-                                        Colors.black,
-                                        Colors.black87,
-                                        Colors.black54,
-                                        Colors.transparent
-                                      ],
+                            colors: [
+                              Theme.of(context).primaryColor,
+                              Theme.of(context).primaryColor.withOpacity(0.9),
+                              Theme.of(context).primaryColor.withOpacity(0.6),
+                              Theme.of(context).primaryColor.withOpacity(0.3),
+                              Colors.transparent
+                            ],
                           ),
                         ),
                         child: Padding(
@@ -207,7 +209,30 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
                           ),
                         ),
                       ),
-                    )
+                    ),
+                    _watched.contains(_movie)
+                        ? Positioned(
+                            right: 10,
+                            top: 10,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .primaryColor
+                                    .withOpacity(0.7),
+                                borderRadius: BorderRadius.circular(100),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(8, 8, 11, 9),
+                                child: Center(
+                                  child: Icon(
+                                    FontAwesomeIcons.eye,
+                                    color: Theme.of(context).accentColor,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        : SizedBox()
                   ],
                 ),
     );
@@ -266,5 +291,21 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
     setState(() {
       _loading = false;
     });
+  }
+
+  Future<void> _getWatchedMovies(
+      int userId, String token, MoviesBloc mb) async {
+    setState(() => _loading = true);
+
+    final response = await _userRep.getWatched(userId, token);
+    if (response.hasError)
+      _error = response.error;
+    else {
+      _error = '';
+      _watched = response.watched;
+      mb.userWatchedMovies = response.watched;
+    }
+
+    setState(() => _loading = false);
   }
 }

@@ -38,6 +38,14 @@ class _MEXTState extends State<MEXT> {
             brightness: Brightness.light,
             color: Colors.white,
           ),
+          cardTheme: CardTheme(
+            elevation: 0,
+            color: Colors.white,
+          ),
+          buttonTheme: ButtonThemeData(
+            buttonColor: Colors.teal,
+            textTheme: ButtonTextTheme.primary,
+          ),
         ),
         darkTheme: ThemeData(
           brightness: Brightness.dark,

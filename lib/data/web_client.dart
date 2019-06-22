@@ -90,4 +90,25 @@ class WebClient {
 
     return jsonDecode(res.body);
   }
+
+  Future<dynamic> delete(String url, [String token]) async {
+    print('DELETE $url TOKEN $token');
+
+    var headers = token != null
+        ? {"Authorization": "Bearer $token", "Content-Type": "application/json"}
+        : {"Content-Type": "application/json"};
+
+    final http.Response res = await http.delete(url, headers: headers);
+
+    print('code: ${res.statusCode}\nheaders: ${res.headers}\nres: ${res.body}');
+
+    if (res.statusCode == 401 && res.headers['token-expired'] == 'true')
+      return await refreshToken(url, token, delete);
+
+    if (res.statusCode >= 400) {
+      throw _handleError(res);
+    }
+
+    return jsonDecode(res.body);
+  }
 }
