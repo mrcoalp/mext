@@ -22,12 +22,12 @@ class RandomMovieRepository {
       this.excludeWatched = false,
       this.webClient = const WebClient()});
 
-  Future<RandomMovieResponse> getMovieAndGenres() async {
+  Future<RandomMovieResponse> getMovieAndGenres(String token) async {
     var json;
     final String uri =
         '${Config.API_URL}/randommovie?with_genres=$withGenres&without_genres=$withoutGenres&rating=$rating&year=$year&vote_count=$voteCount&exclude_watched=$excludeWatched';
     try {
-      json = await webClient.get(uri);
+      json = await webClient.get(uri, token);
       return new RandomMovieResponse(movie: new Movie.fromJson(json));
     } catch (e) {
       print(e.toString());

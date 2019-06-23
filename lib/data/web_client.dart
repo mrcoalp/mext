@@ -27,6 +27,8 @@ class WebClient {
         return await get(url, newTokenRes['token'] as String);
       else if (method == post)
         return await post(url, body, newTokenRes['token'] as String);
+      else if (method == delete)
+        return await delete(url, newTokenRes['token'] as String);
     } catch (e) {
       throw e.toString();
     }

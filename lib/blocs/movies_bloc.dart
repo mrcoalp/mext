@@ -77,4 +77,11 @@ class MoviesBloc extends ChangeNotifier {
     _filterExcludeWatched = excludeWatch;
     notifyListeners();
   }
+
+  clearUserLists() {
+    userFavouriteMovies = null;
+    userToWatchMovies = null;
+    userWatchedMovies = null;
+    notifyListeners();
+  }
 }

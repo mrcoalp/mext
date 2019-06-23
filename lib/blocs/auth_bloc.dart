@@ -3,24 +3,30 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthBloc extends ChangeNotifier {
+  SharedPreferences _prefs;
   int _userId;
   String _token;
   String _refreshToken;
   User _user;
 
   AuthBloc() {
-    this.initOrClear();
+    this._init();
   }
 
-  Future<void> initOrClear() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    this._userId = prefs.getInt('userId');
-    this._token = prefs.getString('token');
-    this._refreshToken = prefs.getString('refreshToken');
+  Future<void> _init() async {
+    _prefs = await SharedPreferences.getInstance();
+    this.refreshTokens();
+  }
+
+  void refreshTokens() {
+    print('refreshing auth tokens...');
+    this._userId = _prefs.getInt('userId');
+    this._token = _prefs.getString('token');
+    this._refreshToken = _prefs.getString('refreshToken');
   }
 
   void logout() {
-    initOrClear();
+    refreshTokens();
     _user = null;
     notifyListeners();
   }

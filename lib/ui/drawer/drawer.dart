@@ -1,4 +1,5 @@
 import 'package:MEXT/blocs/auth_bloc.dart';
+import 'package:MEXT/blocs/movies_bloc.dart';
 import 'package:MEXT/ui/auth/login_register_screen.dart';
 import 'package:MEXT/ui/movie_tabs.dart';
 import 'package:MEXT/ui/profile/profile.dart';
@@ -13,6 +14,7 @@ class DrawerMEXT extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AuthBloc _auth = Provider.of<AuthBloc>(context);
+    final MoviesBloc _movies = Provider.of<MoviesBloc>(context);
 
     return Drawer(
       child: ListView(
@@ -97,6 +99,7 @@ class DrawerMEXT extends StatelessWidget {
                             await SharedPreferences.getInstance();
                         if (await preferences.clear()) {
                           _auth.logout();
+                          _movies.clearUserLists();
                           Navigator.of(context).pop();
                           Flushbar(
                             message: 'Logged out',

@@ -46,4 +46,43 @@ class UserListsRepository {
       return new UserListsResponse.withError(e.toString());
     }
   }
+
+  Future<UserListsResponse> getToWatch(int id, String token) async {
+    String uri = '${Config.API_URL}/users/$id/towatch_movies';
+    try {
+      final response = await webClient.get(uri, token);
+      var towatch = new List<Movie>();
+      for (var w in response) towatch.add(new Movie.fromJson(w));
+      return new UserListsResponse.toWatch(towatch: towatch);
+    } catch (e) {
+      print(e.toString());
+      return new UserListsResponse.withError(e.toString());
+    }
+  }
+
+  Future<UserListsResponse> addToWatch(
+      int id, String token, Movie movie) async {
+    String uri = '${Config.API_URL}/users/$id/towatch_movies';
+    try {
+      final response = await webClient.post(uri, movie.toJson(), token);
+      return new UserListsResponse.message(
+          message: response['message'] as String);
+    } catch (e) {
+      print(e.toString());
+      return new UserListsResponse.withError(e.toString());
+    }
+  }
+
+  Future<UserListsResponse> removeToWatch(
+      int id, String token, Movie movie) async {
+    String uri = '${Config.API_URL}/users/$id/towatch_movies/${movie.id}';
+    try {
+      final response = await webClient.delete(uri, token);
+      return new UserListsResponse.message(
+          message: response['message'] as String);
+    } catch (e) {
+      print(e.toString());
+      return new UserListsResponse.withError(e.toString());
+    }
+  }
 }

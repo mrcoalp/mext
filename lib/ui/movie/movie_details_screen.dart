@@ -6,6 +6,7 @@ import 'package:MEXT/data/models/movie.dart';
 import 'package:MEXT/data/models/movie_info.dart';
 import 'package:MEXT/data/repositories/movie_details_repository.dart';
 import 'package:MEXT/data/repositories/user_lists_repository.dart';
+import 'package:MEXT/ui/app.dart';
 import 'package:MEXT/ui/error_widget.dart';
 import 'package:MEXT/ui/movie_tabs.dart';
 import 'package:flushbar/flushbar.dart';
@@ -14,6 +15,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share/share.dart';
+
+enum UserList { Watched, ToWatch, Favourites }
 
 class MovieDetailsScreen extends StatefulWidget {
   final Movie _movie;
@@ -33,7 +36,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   List<String> _trailers;
   MovieInfo _movieInfo;
   List<Movie> _similar;
-  List<Movie> _watched;
+  List<Movie> _watched, _towatch, favourites;
 
   @override
   void initState() {
@@ -55,9 +58,14 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     final MoviesBloc _moviesBloc = Provider.of<MoviesBloc>(context);
     final AuthBloc _authBloc = Provider.of<AuthBloc>(context);
 
-    _watched = _moviesBloc.userWatchedMovies != null
-        ? _moviesBloc.userWatchedMovies
-        : [];
+    try {
+      _authBloc.refreshTokens();
+    } catch (e) {
+      print(e.toString());
+    }
+
+    _watched = _moviesBloc.userWatchedMovies ?? [];
+    _towatch = _moviesBloc.userToWatchMovies ?? [];
 
     String _genresString = '';
     for (Genre g in widget._movie.genres)
@@ -81,32 +89,6 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                   ),
                   SizedBox(height: 15),
                   Row(
-                    children: <Widget>[
-                      IconButton(
-                        icon: Icon(
-                          FontAwesomeIcons.eye,
-                          color: _watched.contains(widget._movie)
-                              ? Theme.of(context).accentColor
-                              : Theme.of(context).textTheme.body1.color,
-                        ),
-                        onPressed: () => _watched.contains(widget._movie)
-                            ? _removeWatched(_authBloc.userId, _authBloc.token,
-                                widget._movie, _moviesBloc)
-                            : _addWatched(_authBloc.userId, _authBloc.token,
-                                widget._movie, _moviesBloc),
-                      ),
-                      IconButton(
-                        icon: Icon(FontAwesomeIcons.film),
-                        onPressed: null,
-                      ),
-                      IconButton(
-                        icon: Icon(FontAwesomeIcons.heart),
-                        onPressed: null,
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 15),
-                  Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       Text('Rating: ${widget._movie.vote_average.toString()}'),
@@ -116,6 +98,57 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                   ),
                   SizedBox(height: 5),
                   Text(_genresString),
+                  SizedBox(height: 15),
+                  Row(
+                    children: <Widget>[
+                      IconButton(
+                        icon: Icon(
+                          FontAwesomeIcons.eye,
+                          color: _watched.indexWhere(
+                                      (m) => m.id == widget._movie.id) >=
+                                  0
+                              ? Theme.of(context).accentColor
+                              : Theme.of(context).textTheme.body1.color,
+                        ),
+                        onPressed: () => _watched.indexWhere(
+                                    (m) => m.id == widget._movie.id) >=
+                                0
+                            ? _removeFromList(
+                                UserList.Watched,
+                                _authBloc.userId,
+                                _authBloc.token,
+                                widget._movie,
+                                _moviesBloc)
+                            : _addToList(UserList.Watched, _authBloc.userId,
+                                _authBloc.token, widget._movie, _moviesBloc),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          FontAwesomeIcons.film,
+                          color: _towatch.indexWhere(
+                                      (m) => m.id == widget._movie.id) >=
+                                  0
+                              ? Theme.of(context).accentColor
+                              : Theme.of(context).textTheme.body1.color,
+                        ),
+                        onPressed: () => _towatch.indexWhere(
+                                    (m) => m.id == widget._movie.id) >=
+                                0
+                            ? _removeFromList(
+                                UserList.ToWatch,
+                                _authBloc.userId,
+                                _authBloc.token,
+                                widget._movie,
+                                _moviesBloc)
+                            : _addToList(UserList.ToWatch, _authBloc.userId,
+                                _authBloc.token, widget._movie, _moviesBloc),
+                      ),
+                      IconButton(
+                        icon: Icon(FontAwesomeIcons.heart),
+                        onPressed: null,
+                      ),
+                    ],
+                  ),
                   SizedBox(height: 15),
                   Text('${widget._movie.release_date}'),
                   SizedBox(height: 5),
@@ -279,15 +312,42 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     setState(() => _loadingSimilar = false);
   }
 
-  Future<void> _addWatched(
-      int id, String token, Movie movie, MoviesBloc mb) async {
+  Future<void> _addToList(
+      UserList list, int id, String token, Movie movie, MoviesBloc mb) async {
+    Function add, addToBloc;
+    String alertTitle, alertContent, toastMsg;
+
+    switch (list) {
+      case UserList.Watched:
+        {
+          add = _userListsRep.addWatched;
+          addToBloc = mb.userWatchedMovies.add;
+          alertTitle = 'Add to watched list?';
+          alertContent = 'Add \'${movie.title}\' to watched movies list?';
+          toastMsg = '${movie.title} added to watched list';
+          break;
+        }
+      case UserList.ToWatch:
+        {
+          add = _userListsRep.addToWatch;
+          addToBloc = mb.userToWatchMovies.add;
+          alertTitle = 'Save to watch later?';
+          alertContent = 'Save \'${movie.title}\' to watch later?';
+          toastMsg = '${movie.title} saved to watch later';
+          break;
+        }
+
+      default:
+        break;
+    }
+
     if (id != null)
       showDialog(
           context: context,
           builder: (ctx) {
             return AlertDialog(
-              title: Text('Add to watched list?'),
-              content: Text('Add ${movie.title} to watched movies list?'),
+              title: Text(alertTitle),
+              content: Text(alertContent),
               actions: <Widget>[
                 FlatButton(
                   child: Text('NO'),
@@ -296,20 +356,26 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 FlatButton(
                   child: Text('YES'),
                   onPressed: () async {
-                    final response =
-                        await _userListsRep.addWatched(id, token, movie);
-                    if (response.hasError)
-                      _error = response.error;
-                    else {
+                    final response = await add(id, token, movie);
+                    if (response.hasError) {
+                      Navigator.of(context).pop();
+
+                      setState(() {});
+
+                      Flushbar(
+                        message: '${response.error}',
+                        duration: Duration(seconds: 2),
+                      )..show(context);
+                    } else {
                       _error = '';
-                      mb.userWatchedMovies.add(widget._movie);
+                      addToBloc(widget._movie);
 
                       Navigator.of(context).pop();
 
                       setState(() {});
 
                       Flushbar(
-                        message: '${movie.title} added to watched list',
+                        message: toastMsg,
                         duration: Duration(seconds: 2),
                       )..show(context);
                     }
@@ -322,15 +388,42 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
       _showDialogNotLoggedIn();
   }
 
-  Future<void> _removeWatched(
-      int id, String token, Movie movie, MoviesBloc mb) async {
+  Future<void> _removeFromList(
+      UserList list, int id, String token, Movie movie, MoviesBloc mb) async {
+    Function remove, removeFromBloc;
+    String alertTitle, alertContent, toastMsg;
+
+    switch (list) {
+      case UserList.Watched:
+        {
+          remove = _userListsRep.removeWatched;
+          removeFromBloc = mb.userWatchedMovies.remove;
+          alertTitle = 'Remove from watched list?';
+          alertContent = 'Remove \'${movie.title}\' from watched movies list?';
+          toastMsg = '${movie.title} removed from watched list';
+          break;
+        }
+      case UserList.ToWatch:
+        {
+          remove = _userListsRep.removeToWatch;
+          removeFromBloc = mb.userToWatchMovies.remove;
+          alertTitle = 'Remove from watch later?';
+          alertContent = 'Remove \'${movie.title}\' from watch later?';
+          toastMsg = '${movie.title} removed from watch later';
+          break;
+        }
+
+      default:
+        break;
+    }
+
     if (id != null)
       showDialog(
           context: context,
           builder: (ctx) {
             return AlertDialog(
-              title: Text('Remove from watched list?'),
-              content: Text('Remove ${movie.title} from watched movies list?'),
+              title: Text(alertTitle),
+              content: Text(alertContent),
               actions: <Widget>[
                 FlatButton(
                   child: Text('NO'),
@@ -339,20 +432,26 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 FlatButton(
                   child: Text('YES'),
                   onPressed: () async {
-                    final response =
-                        await _userListsRep.removeWatched(id, token, movie);
-                    if (response.hasError)
-                      _error = response.error;
-                    else {
+                    final response = await remove(id, token, movie);
+                    if (response.hasError) {
+                      Navigator.of(context).pop();
+
+                      setState(() {});
+
+                      Flushbar(
+                        message: '${response.error}',
+                        duration: Duration(seconds: 2),
+                      )..show(context);
+                    } else {
                       _error = '';
-                      mb.userWatchedMovies.remove(widget._movie);
+                      removeFromBloc(widget._movie);
 
                       Navigator.of(context).pop();
 
                       setState(() {});
 
                       Flushbar(
-                        message: '${movie.title} removed from watched list',
+                        message: toastMsg,
                         duration: Duration(seconds: 2),
                       )..show(context);
                     }
@@ -378,146 +477,4 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
           ],
         );
       });
-}
-
-class MovieDetailsAppBar extends StatelessWidget {
-  final Movie movie;
-
-  MovieDetailsAppBar({@required this.movie});
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverAppBar(
-      backgroundColor: Theme.of(context).primaryColor,
-      expandedHeight: (MediaQuery.of(context).size.height / 3) * 2.5,
-      floating: false,
-      pinned: true,
-      leading: CircleAvatar(
-        backgroundColor: Theme.of(context).primaryColor.withOpacity(0.5),
-        child: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-          color: Theme.of(context).primaryTextTheme.body1.color,
-        ),
-      ),
-      actions: <Widget>[
-        CircleAvatar(
-          backgroundColor: Theme.of(context).primaryColor.withOpacity(0.5),
-          child: IconButton(
-            icon: Icon(Icons.home),
-            onPressed: () => Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => MovieTabs())),
-            // onPressed: () => Navigator.of(context).pushAndRemoveUntil(
-            //     MaterialPageRoute(builder: (context) => MovieTabs()),
-            //     (Route<dynamic> route) => false),
-            color: Theme.of(context).primaryTextTheme.body1.color,
-          ),
-        ),
-      ],
-      flexibleSpace: FlexibleSpaceBar(
-        centerTitle: true,
-        background: movie.poster_path != null
-            ? Hero(
-                tag: movie.id,
-                child: Image.network(
-                  '$kTMDBimgPath${movie.poster_path}',
-                  fit: BoxFit.cover,
-                ),
-              )
-            : Center(
-                child: Text(
-                  'No Movie Poster',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-      ),
-    );
-  }
-}
-
-class TrailerThumbnail extends StatelessWidget {
-  final String videoID;
-  final Function onTap;
-
-  TrailerThumbnail(this.videoID, this.onTap);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8, bottom: 8),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Material(
-          elevation: 5,
-          color: Colors.transparent,
-          child: AspectRatio(
-            aspectRatio: 16 / 9,
-            child: Container(
-              child: Center(
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: Colors.white70,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Icon(
-                      Icons.play_arrow,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-              ),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
-                  image: DecorationImage(
-                    image: NetworkImage(
-                        'https://img.youtube.com/vi/$videoID/0.jpg'),
-                    fit: BoxFit.cover,
-                  )),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class MoviePoster extends StatelessWidget {
-  final Movie movie;
-
-  MoviePoster(this.movie);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: GestureDetector(
-        onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => MovieDetailsScreen(movie))),
-        child: Material(
-          elevation: 5,
-          color: Colors.transparent,
-          child: AspectRatio(
-            aspectRatio: 2 / 3,
-            child: Hero(
-              tag: movie.id,
-              child: Container(
-                width: MediaQuery.of(context).size.width / 3,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
-                  image: DecorationImage(
-                    image: NetworkImage('$kTMDBimgPath${movie.poster_path}'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }

@@ -35,10 +35,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _error = response.error;
     else {
       _error = '';
-      _user = response.user;
-      await a.initOrClear();
-      a.user = response.user;
       imageCache.clear();
+      _user = response.user;
+      a.user = response.user;
     }
 
     setState(() => _loading = false);
@@ -47,6 +46,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final AuthBloc _auth = Provider.of<AuthBloc>(context);
+
+    try {
+      _auth.refreshTokens();
+    } catch (e) {
+      print(e.toString());
+    }
 
     if (_auth.user == null && _error == '')
       this._getUserDetails(_auth.userId, _auth.token, _auth);

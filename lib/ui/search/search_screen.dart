@@ -61,6 +61,7 @@ class _SearchScreenState extends State<SearchScreen> {
             floating: true,
             snap: true,
             title: _search,
+            leading: null,
             actions: <Widget>[
               _loading
                   ? Center(
