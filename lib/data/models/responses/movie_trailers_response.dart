@@ -1,4 +1,4 @@
-import 'package:MEXT/data/models/response.dart';
+import 'package:MEXT/data/models/responses/response.dart';
 import 'package:flutter/material.dart';
 
 class MovieTrailersResponse extends BaseResponse {

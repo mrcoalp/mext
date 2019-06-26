@@ -31,16 +31,10 @@ class _UserListsScreenState extends State<UserListsScreen> {
     final AuthBloc _authBloc = Provider.of<AuthBloc>(context);
     final MoviesBloc _moviesBloc = Provider.of<MoviesBloc>(context);
 
-    try {
-      _authBloc.refreshTokens();
-    } catch (e) {
-      print(e.toString());
-    }
-
     if (_moviesBloc.userWatchedMovies == null &&
         _error == '' &&
         _authBloc.userId != null)
-      this._getWatchedMovies(_authBloc.userId, _authBloc.token, _moviesBloc);
+      this._getWatchedMovies(_authBloc.userId, _moviesBloc);
     else {
       _watched = _moviesBloc.userWatchedMovies ?? [];
     }
@@ -48,7 +42,7 @@ class _UserListsScreenState extends State<UserListsScreen> {
     if (_moviesBloc.userToWatchMovies == null &&
         _error == '' &&
         _authBloc.userId != null)
-      this._getToWatchMovies(_authBloc.userId, _authBloc.token, _moviesBloc);
+      this._getToWatchMovies(_authBloc.userId, _moviesBloc);
     else {
       _toWatch = _moviesBloc.userToWatchMovies ?? [];
     }
@@ -68,10 +62,8 @@ class _UserListsScreenState extends State<UserListsScreen> {
               : IconButton(
                   icon: Icon(Icons.refresh),
                   onPressed: () {
-                    _getWatchedMovies(
-                        _authBloc.userId, _authBloc.token, _moviesBloc);
-                    _getToWatchMovies(
-                        _authBloc.userId, _authBloc.token, _moviesBloc);
+                    _getWatchedMovies(_authBloc.userId, _moviesBloc);
+                    _getToWatchMovies(_authBloc.userId, _moviesBloc);
                   },
                 )
         ],
@@ -132,11 +124,10 @@ class _UserListsScreenState extends State<UserListsScreen> {
     );
   }
 
-  Future<void> _getWatchedMovies(
-      int userId, String token, MoviesBloc mb) async {
+  Future<void> _getWatchedMovies(int userId, MoviesBloc mb) async {
     setState(() => _loading = true);
 
-    final response = await _userRep.getWatched(userId, token);
+    final response = await _userRep.getWatched(userId);
     if (response.hasError)
       _error = response.error;
     else {
@@ -148,11 +139,10 @@ class _UserListsScreenState extends State<UserListsScreen> {
     setState(() => _loading = false);
   }
 
-  Future<void> _getToWatchMovies(
-      int userId, String token, MoviesBloc mb) async {
+  Future<void> _getToWatchMovies(int userId, MoviesBloc mb) async {
     setState(() => _loading = true);
 
-    final response = await _userRep.getToWatch(userId, token);
+    final response = await _userRep.getToWatch(userId);
     if (response.hasError)
       _error = response.error;
     else {

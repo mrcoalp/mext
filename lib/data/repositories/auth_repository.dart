@@ -1,5 +1,5 @@
 import 'package:MEXT/.env.dart';
-import 'package:MEXT/data/models/auth_response.dart';
+import 'package:MEXT/data/models/responses/auth_response.dart';
 import 'package:MEXT/data/models/user.dart';
 import 'package:MEXT/data/web_client.dart';
 

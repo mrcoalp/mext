@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:MEXT/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:MEXT/.env.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,7 +12,7 @@ class WebClient {
       [dynamic body]) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    String refreshToken = prefs.getString('refreshToken');
+    String refreshToken = prefs.getString(kRefreshToken);
 
     String uri = '${Config.API_URL}/refreshtoken';
 
@@ -20,15 +21,14 @@ class WebClient {
           await post(uri, {'token': token, 'refreshToken': refreshToken});
 
       await prefs.setString(
-          'refreshToken', newTokenRes['refreshToken'] as String);
-      await prefs.setString('token', newTokenRes['token'] as String);
+          kRefreshToken, newTokenRes['refreshToken'] as String);
+      await prefs.setString(kToken, newTokenRes['token'] as String);
 
       if (method == get)
-        return await get(url, newTokenRes['token'] as String);
+        return await get(url);
       else if (method == post)
-        return await post(url, body, newTokenRes['token'] as String);
-      else if (method == delete)
-        return await delete(url, newTokenRes['token'] as String);
+        return await post(url, body);
+      else if (method == delete) return await delete(url);
     } catch (e) {
       throw e.toString();
     }
@@ -50,7 +50,10 @@ class WebClient {
     }
   }
 
-  Future<dynamic> get(String url, [String token]) async {
+  Future<dynamic> get(String url) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString(kToken);
+
     print('GET $url TOKEN $token');
 
     var headers = token != null
@@ -71,7 +74,10 @@ class WebClient {
     return jsonDecode(res.body);
   }
 
-  Future<dynamic> post(String url, dynamic body, [String token]) async {
+  Future<dynamic> post(String url, dynamic body) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString(kToken);
+
     print('POST $url TOKEN $token BODY ${jsonEncode(body)}');
 
     var headers = token != null
@@ -93,7 +99,10 @@ class WebClient {
     return jsonDecode(res.body);
   }
 
-  Future<dynamic> delete(String url, [String token]) async {
+  Future<dynamic> delete(String url) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString(kToken);
+
     print('DELETE $url TOKEN $token');
 
     var headers = token != null

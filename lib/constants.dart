@@ -20,3 +20,14 @@ const List<dynamic> kgenres = [
   {"id": 10752, "name": "War"},
   {"id": 10770, "name": "TV Movie"}
 ];
+const String kUserId = 'userId';
+const String kToken = 'token';
+const String kRefreshToken = 'refreshToken';
+const String kFilters = 'filters';
+
+const String kWithGenres = 'withGenres';
+const String kWithoutGenres = 'withoutGenres';
+const String kRating = 'rating';
+const String kYear = 'year';
+const String kVotes = 'votes';
+const String kExcludeWatched = 'excludeWatched';

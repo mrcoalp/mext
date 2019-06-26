@@ -1,5 +1,5 @@
 import 'package:MEXT/data/models/user.dart';
-import 'package:MEXT/data/models/user_response.dart';
+import 'package:MEXT/data/models/responses/user_response.dart';
 import 'package:MEXT/data/web_client.dart';
 import 'package:MEXT/.env.dart';
 
@@ -8,10 +8,10 @@ class UserRepository {
 
   UserRepository({this.webClient = const WebClient()});
 
-  Future<UserResponse> getUserDetails(int id, String token) async {
+  Future<UserResponse> getUserDetails(int id) async {
     String uri = '${Config.API_URL}/users/$id';
     try {
-      var response = await webClient.get(uri, token);
+      var response = await webClient.get(uri);
       return new UserResponse(user: new User.fromJson(response));
     } catch (e) {
       print(e.toString());
@@ -19,11 +19,10 @@ class UserRepository {
     }
   }
 
-  Future<String> updateProfilePicture(
-      int id, String token, String b64image) async {
+  Future<String> updateProfilePicture(int id, String b64image) async {
     String uri = '${Config.API_URL}/users/$id/profilepicture';
     try {
-      var response = await webClient.post(uri, b64image, token);
+      var response = await webClient.post(uri, b64image);
       return response['message'] as String;
     } catch (e) {
       print(e.toString());

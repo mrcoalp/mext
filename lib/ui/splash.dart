@@ -1,4 +1,5 @@
 import 'package:MEXT/blocs/auth_bloc.dart';
+import 'package:MEXT/blocs/movies_bloc.dart';
 import 'package:MEXT/ui/movie_tabs.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,12 +9,19 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AuthBloc _auth = Provider.of<AuthBloc>(context);
+    final MoviesBloc _movies = Provider.of<MoviesBloc>(context);
 
-    _auth.init().then((_) => {
-          Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => MovieTabs()),
-              (Route<dynamic> route) => false)
-        });
+    print('splash screen');
+
+    _auth.init().then((_) {
+      print('auth bloc initialized');
+      _movies.init().then((_) {
+        print('movies bloc initialized');
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => MovieTabs()),
+            (Route<dynamic> route) => false);
+      });
+    });
 
     return Container(
       color: Colors.white,

@@ -1,8 +1,8 @@
 import 'package:MEXT/.env.dart';
 import 'package:MEXT/data/models/movie.dart';
 import 'package:MEXT/data/models/movie_info.dart';
-import 'package:MEXT/data/models/movie_info_response.dart';
-import 'package:MEXT/data/models/movie_trailers_response.dart';
+import 'package:MEXT/data/models/responses/movie_info_response.dart';
+import 'package:MEXT/data/models/responses/movie_trailers_response.dart';
 import 'package:MEXT/data/web_client.dart';
 
 class MovieDetailsRepository {

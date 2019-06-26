@@ -1,6 +1,6 @@
 import 'package:MEXT/.env.dart';
 import 'package:MEXT/data/models/movie.dart';
-import 'package:MEXT/data/models/randommovie_response.dart';
+import 'package:MEXT/data/models/responses/randommovie_response.dart';
 import 'package:MEXT/data/web_client.dart';
 
 class RandomMovieRepository {
@@ -22,12 +22,12 @@ class RandomMovieRepository {
       this.excludeWatched = false,
       this.webClient = const WebClient()});
 
-  Future<RandomMovieResponse> getMovieAndGenres(String token) async {
+  Future<RandomMovieResponse> getMovieAndGenres() async {
     var json;
     final String uri =
-        '${Config.API_URL}/randommovie?with_genres=$withGenres&without_genres=$withoutGenres&rating=$rating&year=$year&vote_count=$voteCount&exclude_watched=$excludeWatched';
+        '${Config.API_URL}/randommovie?with_genres=${withGenres ?? ''}&without_genres=${withoutGenres ?? ''}&rating=${rating ?? 0}&year=${year ?? 0}&vote_count=${voteCount ?? 0}&exclude_watched=${excludeWatched ?? false}';
     try {
-      json = await webClient.get(uri, token);
+      json = await webClient.get(uri);
       return new RandomMovieResponse(movie: new Movie.fromJson(json));
     } catch (e) {
       print(e.toString());

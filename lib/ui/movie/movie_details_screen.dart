@@ -1,6 +1,5 @@
 import 'package:MEXT/blocs/auth_bloc.dart';
 import 'package:MEXT/blocs/movies_bloc.dart';
-import 'package:MEXT/constants.dart';
 import 'package:MEXT/data/models/genre.dart';
 import 'package:MEXT/data/models/movie.dart';
 import 'package:MEXT/data/models/movie_info.dart';
@@ -8,7 +7,6 @@ import 'package:MEXT/data/repositories/movie_details_repository.dart';
 import 'package:MEXT/data/repositories/user_lists_repository.dart';
 import 'package:MEXT/ui/app.dart';
 import 'package:MEXT/ui/error_widget.dart';
-import 'package:MEXT/ui/movie_tabs.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -57,12 +55,6 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   Widget build(BuildContext context) {
     final MoviesBloc _moviesBloc = Provider.of<MoviesBloc>(context);
     final AuthBloc _authBloc = Provider.of<AuthBloc>(context);
-
-    // try {
-    //   _authBloc.refreshTokens();
-    // } catch (e) {
-    //   print(e.toString());
-    // }
 
     _watched = _moviesBloc.userWatchedMovies ?? [];
     _towatch = _moviesBloc.userToWatchMovies ?? [];
@@ -113,14 +105,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                         onPressed: () => _watched.indexWhere(
                                     (m) => m.id == widget._movie.id) >=
                                 0
-                            ? _removeFromList(
-                                UserList.Watched,
-                                _authBloc.userId,
-                                _authBloc.token,
-                                widget._movie,
-                                _moviesBloc)
+                            ? _removeFromList(UserList.Watched,
+                                _authBloc.userId, widget._movie, _moviesBloc)
                             : _addToList(UserList.Watched, _authBloc.userId,
-                                _authBloc.token, widget._movie, _moviesBloc),
+                                widget._movie, _moviesBloc),
                       ),
                       IconButton(
                         icon: Icon(
@@ -134,14 +122,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                         onPressed: () => _towatch.indexWhere(
                                     (m) => m.id == widget._movie.id) >=
                                 0
-                            ? _removeFromList(
-                                UserList.ToWatch,
-                                _authBloc.userId,
-                                _authBloc.token,
-                                widget._movie,
-                                _moviesBloc)
+                            ? _removeFromList(UserList.ToWatch,
+                                _authBloc.userId, widget._movie, _moviesBloc)
                             : _addToList(UserList.ToWatch, _authBloc.userId,
-                                _authBloc.token, widget._movie, _moviesBloc),
+                                widget._movie, _moviesBloc),
                       ),
                       IconButton(
                         icon: Icon(FontAwesomeIcons.heart),
@@ -313,7 +297,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   }
 
   Future<void> _addToList(
-      UserList list, int id, String token, Movie movie, MoviesBloc mb) async {
+      UserList list, int id, Movie movie, MoviesBloc mb) async {
     Function add, addToBloc;
     String alertTitle, alertContent, toastMsg;
 
@@ -356,7 +340,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 FlatButton(
                   child: Text('YES'),
                   onPressed: () async {
-                    final response = await add(id, token, movie);
+                    final response = await add(id, movie);
                     if (response.hasError) {
                       Navigator.of(context).pop();
 
@@ -389,7 +373,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   }
 
   Future<void> _removeFromList(
-      UserList list, int id, String token, Movie movie, MoviesBloc mb) async {
+      UserList list, int id, Movie movie, MoviesBloc mb) async {
     Function remove, removeFromBloc;
     String alertTitle, alertContent, toastMsg;
 
@@ -433,7 +417,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 FlatButton(
                   child: Text('YES'),
                   onPressed: () async {
-                    final response = await remove(id, token, movie);
+                    final response = await remove(id, movie);
                     if (response.hasError) {
                       Navigator.of(context).pop();
 

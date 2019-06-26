@@ -27,10 +27,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
   }
 
-  Future<void> _getUserDetails(int id, String token, AuthBloc a) async {
+  Future<void> _getUserDetails(int id, AuthBloc a) async {
     setState(() => _loading = true);
 
-    var response = await _userRepository.getUserDetails(id, token);
+    var response = await _userRepository.getUserDetails(id);
     if (response.hasError)
       _error = response.error;
     else {
@@ -47,14 +47,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final AuthBloc _auth = Provider.of<AuthBloc>(context);
 
-    try {
-      _auth.refreshTokens();
-    } catch (e) {
-      print(e.toString());
-    }
-
     if (_auth.user == null && _error == '')
-      this._getUserDetails(_auth.userId, _auth.token, _auth);
+      this._getUserDetails(_auth.userId, _auth);
     else
       _user = _auth.user;
 
@@ -74,8 +68,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     )
                   : IconButton(
                       icon: Icon(Icons.refresh),
-                      onPressed: () =>
-                          _getUserDetails(_auth.userId, _auth.token, _auth),
+                      onPressed: () => _getUserDetails(_auth.userId, _auth),
                     ),
             ],
           ),
@@ -136,8 +129,8 @@ class _ProfilePictureState extends State<ProfilePicture> {
 
     final _userRepository = new UserRepository();
 
-    final res = await _userRepository.updateProfilePicture(
-        widget.ab.userId, widget.ab.token, b64image);
+    final res =
+        await _userRepository.updateProfilePicture(widget.ab.userId, b64image);
 
     setState(() => _loading = false);
 
@@ -181,9 +174,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
                   String res = await _uploadFromGallery();
 
                   if (res != null) {
-                    this
-                        .widget
-                        .update(widget.ab.userId, widget.ab.token, widget.ab);
+                    this.widget.update(widget.ab.userId, widget.ab);
                   }
                 },
               ),
@@ -195,9 +186,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
                   String res = await _uploadFromCamera();
 
                   if (res != null) {
-                    this
-                        .widget
-                        .update(widget.ab.userId, widget.ab.token, widget.ab);
+                    this.widget.update(widget.ab.userId, widget.ab);
                   }
                 },
               ),

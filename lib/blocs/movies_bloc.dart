@@ -1,23 +1,50 @@
+import 'dart:convert';
+
+import 'package:MEXT/constants.dart';
 import 'package:MEXT/data/models/genre.dart';
 import 'package:MEXT/data/models/movie.dart';
+import 'package:MEXT/data/repositories/randommovie_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MoviesBloc extends ChangeNotifier {
+  MoviesBloc();
+
+  bool _loading;
+  String _error;
+
   Movie _currentMovie;
   List<Genre> _allGenres;
 
-  String _filterWithGenres = '';
-  String _filterWithoutGenres = '';
-  int _filterRating = 0;
-  int _filterYear = 0;
-  int _filterVoteCount = 0;
-  bool _filterExcludeWatched = false;
+  String _filterWithGenres;
+  String _filterWithoutGenres;
+  int _filterRating;
+  int _filterYear;
+  int _filterVoteCount;
+  bool _filterExcludeWatched;
 
   var movieHistory = new List<Movie>();
 
   List<Movie> userWatchedMovies;
   List<Movie> userToWatchMovies;
   List<Movie> userFavouriteMovies;
+
+  Future<void> init() async {
+    print('movies bloc initializing');
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    var filters = jsonDecode(_prefs.getString(kFilters) ?? '{}');
+
+    this._filterWithGenres = filters[kWithGenres] ?? '';
+    this._filterWithoutGenres = filters[kWithoutGenres] ?? '';
+    this._filterRating = filters[kRating] ?? 0;
+    this._filterYear = filters[kYear] ?? 0;
+    this._filterVoteCount = filters[kVotes] ?? 0;
+    this._filterExcludeWatched = filters[kExcludeWatched] ?? false;
+  }
+
+  bool get loading => _loading;
+
+  String get error => _error;
 
   Movie get currentMovie => _currentMovie;
 
@@ -76,6 +103,35 @@ class MoviesBloc extends ChangeNotifier {
   set filterExcludeWatched(bool excludeWatch) {
     _filterExcludeWatched = excludeWatch;
     notifyListeners();
+  }
+
+  Future<Movie> getRandomMovie() async {
+    _loading = true;
+
+    Movie m;
+
+    var rndMovie = new RandomMovieRepository(
+        withGenres: this._filterWithGenres,
+        withoutGenres: this._filterWithoutGenres,
+        rating: this._filterRating,
+        year: this._filterYear,
+        voteCount: this._filterVoteCount,
+        excludeWatched: this._filterExcludeWatched);
+
+    var response = await rndMovie.getMovieAndGenres();
+    if (response.hasError) {
+      _error = response.error;
+      m = null;
+    } else {
+      _error = '';
+      this._currentMovie = response.movie;
+      this.movieHistory.add(response.movie);
+      m = response.movie;
+    }
+
+    _loading = false;
+
+    return m;
   }
 
   clearUserLists() {

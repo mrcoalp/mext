@@ -1,5 +1,6 @@
 import 'package:MEXT/blocs/auth_bloc.dart';
 import 'package:MEXT/blocs/movies_bloc.dart';
+import 'package:MEXT/constants.dart';
 import 'package:MEXT/ui/auth/login_register_screen.dart';
 import 'package:MEXT/ui/movie_tabs.dart';
 import 'package:MEXT/ui/profile/profile.dart';
@@ -97,15 +98,20 @@ class DrawerMEXT extends StatelessWidget {
                       onPressed: () async {
                         SharedPreferences preferences =
                             await SharedPreferences.getInstance();
-                        if (await preferences.clear()) {
-                          _auth.logout();
-                          _movies.clearUserLists();
-                          Navigator.of(context).pop();
-                          Flushbar(
-                            message: 'Logged out',
-                            duration: Duration(seconds: 2),
-                          )..show(context);
-                        }
+
+                        await preferences.remove(kUserId);
+                        await preferences.remove(kToken);
+                        await preferences.remove(kRefreshToken);
+
+                        _auth.logout();
+                        _movies.clearUserLists();
+
+                        Navigator.of(context).pop();
+
+                        Flushbar(
+                          message: 'Logged out',
+                          duration: Duration(seconds: 2),
+                        )..show(context);
                       },
                     ),
                   ),

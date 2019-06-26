@@ -42,14 +42,10 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
     final MoviesBloc _moviesBloc = Provider.of<MoviesBloc>(context);
     final AuthBloc _authBloc = Provider.of<AuthBloc>(context);
 
-    // try {
-    //   _authBloc.refreshTokens();
-    // } catch (e) {
-    //   print(e.toString());
-    // }
+    print('random movie');
 
     if (_moviesBloc.currentMovie == null && _error == '')
-      this._getRandomMovie(_moviesBloc, _authBloc.token);
+      this._getRandomMovie(_moviesBloc);
     else {
       _movie = _moviesBloc.currentMovie;
       _genresString = '';
@@ -58,10 +54,11 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
           _genresString += _genresString != '' ? ', ${g.name}' : g.name;
     }
 
-    if (_moviesBloc.userWatchedMovies == null &&
+    if (_moviesBloc.currentMovie != null &&
+        _moviesBloc.userWatchedMovies == null &&
         _error == '' &&
         _authBloc.userId != null)
-      this._getUserLists(_authBloc.userId, _authBloc.token, _moviesBloc);
+      this._getUserLists(_authBloc.userId, _moviesBloc);
     else {
       _watched = _moviesBloc.userWatchedMovies ?? [];
     }
@@ -103,7 +100,7 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
               FontAwesomeIcons.random,
               size: 16,
             ),
-            onPressed: () => _getRandomMovie(_moviesBloc, _authBloc.token),
+            onPressed: () => _getRandomMovie(_moviesBloc),
           ),
         ],
       ),
@@ -270,7 +267,7 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
     );
   }
 
-  Future<void> _getRandomMovie(MoviesBloc mb, String token) async {
+  Future<void> _getRandomMovie(MoviesBloc mb) async {
     setState(() {
       _loading = true;
     });
@@ -283,7 +280,7 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
         voteCount: mb.filterVoteCount,
         excludeWatched: mb.filterExcludeWatched);
 
-    var response = await rndMovie.getMovieAndGenres(token);
+    var response = await rndMovie.getMovieAndGenres();
     if (response.hasError) {
       _error = response.error;
     } else {
@@ -298,10 +295,10 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
     });
   }
 
-  Future<void> _getUserLists(int userId, String token, MoviesBloc mb) async {
+  Future<void> _getUserLists(int userId, MoviesBloc mb) async {
     setState(() => _loading = true);
 
-    final response = await _userRep.getWatched(userId, token);
+    final response = await _userRep.getWatched(userId);
     if (response.hasError)
       _error = response.error;
     else {
@@ -310,7 +307,7 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
       mb.userWatchedMovies = response.watched;
     }
 
-    final towatch = await _userRep.getToWatch(userId, token);
+    final towatch = await _userRep.getToWatch(userId);
     if (towatch.hasError)
       _error = towatch.error;
     else {

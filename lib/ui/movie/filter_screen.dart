@@ -1,16 +1,19 @@
+import 'dart:convert';
+
+import 'package:MEXT/blocs/auth_bloc.dart';
 import 'package:MEXT/blocs/movies_bloc.dart';
 import 'package:MEXT/constants.dart';
 import 'package:MEXT/data/models/genre.dart';
 import 'package:MEXT/ui/buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FilterScreen extends StatefulWidget {
   @override
   _FilterScreenState createState() => _FilterScreenState();
 }
 
-//TODO(marco): implement save settings to shared preferences
 class _FilterScreenState extends State<FilterScreen> {
   // final _genresRepository = new GenresRepository();
 
@@ -40,6 +43,7 @@ class _FilterScreenState extends State<FilterScreen> {
   @override
   Widget build(BuildContext context) {
     final MoviesBloc _moviesBloc = Provider.of<MoviesBloc>(context);
+    final AuthBloc _authBloc = Provider.of<AuthBloc>(context);
 
     _allGenres = [];
     for (var g in kgenres) _allGenres.add(new Genre.fromJson(g));
@@ -66,7 +70,23 @@ class _FilterScreenState extends State<FilterScreen> {
       ),
       floatingActionButton: RaisedButton(
         child: Text('Update Filters'),
-        onPressed: () => Navigator.of(context).pop(),
+        onPressed: () async {
+          var filters = {
+            kWithGenres: _moviesBloc.filterWithGenres,
+            kWithoutGenres: _moviesBloc.filterWithoutGenres,
+            kRating: _moviesBloc.filterRating,
+            kYear: _moviesBloc.filterYear,
+            kVotes: _moviesBloc.filterVoteCount,
+            kExcludeWatched: _moviesBloc.filterExcludeWatched
+          };
+
+          String save = jsonEncode(filters);
+
+          SharedPreferences _prefs = await SharedPreferences.getInstance();
+          await _prefs.setString(kFilters, save);
+
+          Navigator.of(context).pop();
+        },
       ),
       body: Padding(
           padding: const EdgeInsets.fromLTRB(15, 8, 15, 8),
@@ -183,21 +203,23 @@ class _FilterScreenState extends State<FilterScreen> {
                   controller: _voteCountCtrl,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 20),
-                child: SwitchListTile(
-                  value: _excludeWatched,
-                  onChanged: (value) {
-                    _moviesBloc.filterExcludeWatched = value;
-                    _excludeWatched = _moviesBloc.filterExcludeWatched;
-                    setState(() {});
-                  },
-                  title: Text(
-                    'Exclude Watched',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
+              _authBloc.userId != null
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: SwitchListTile(
+                        value: _excludeWatched,
+                        onChanged: (value) {
+                          _moviesBloc.filterExcludeWatched = value;
+                          _excludeWatched = _moviesBloc.filterExcludeWatched;
+                          setState(() {});
+                        },
+                        title: Text(
+                          'Exclude Watched',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    )
+                  : Container(),
               SizedBox(
                 height: 70,
               )

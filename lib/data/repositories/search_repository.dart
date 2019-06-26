@@ -1,4 +1,4 @@
-import 'package:MEXT/data/models/search_response.dart';
+import 'package:MEXT/data/models/responses/search_response.dart';
 import 'package:MEXT/data/web_client.dart';
 import 'package:MEXT/.env.dart';
 

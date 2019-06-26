@@ -1,5 +1,5 @@
 import 'package:MEXT/data/models/movie.dart';
-import 'package:MEXT/data/models/response.dart';
+import 'package:MEXT/data/models/responses/response.dart';
 
 class SearchResponse extends BaseResponse {
   final List<Movie> movies;

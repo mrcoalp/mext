@@ -1,4 +1,5 @@
 import 'package:MEXT/blocs/auth_bloc.dart';
+import 'package:MEXT/constants.dart';
 import 'package:MEXT/data/repositories/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -35,13 +36,11 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
       _msg = error.last.toUpperCase();
     } else {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setInt('userId', ab.userId);
-      await prefs.setString('token', ab.token);
-      await prefs.setString('refreshToken', ab.refreshToken);
+      await prefs.setInt(kUserId, response.userId);
+      await prefs.setString(kToken, response.token);
+      await prefs.setString(kRefreshToken, response.refreshToken);
 
       ab.userId = response.userId;
-      ab.token = response.token;
-      ab.refreshToken = response.refreshToken;
 
       Navigator.of(context).pop();
 

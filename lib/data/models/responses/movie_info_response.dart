@@ -1,6 +1,6 @@
 import 'package:MEXT/data/models/movie.dart';
 import 'package:MEXT/data/models/movie_info.dart';
-import 'package:MEXT/data/models/response.dart';
+import 'package:MEXT/data/models/responses/response.dart';
 import 'package:flutter/material.dart';
 
 class MovieInfoResponse extends BaseResponse {
