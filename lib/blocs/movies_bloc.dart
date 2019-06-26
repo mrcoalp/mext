@@ -4,14 +4,15 @@ import 'package:MEXT/constants.dart';
 import 'package:MEXT/data/models/genre.dart';
 import 'package:MEXT/data/models/movie.dart';
 import 'package:MEXT/data/repositories/randommovie_repository.dart';
+import 'package:MEXT/data/repositories/user_lists_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MoviesBloc extends ChangeNotifier {
   MoviesBloc();
 
-  bool _loading;
-  String _error;
+  bool _loading = false;
+  String _error = '';
 
   Movie _currentMovie;
   List<Genre> _allGenres;
@@ -25,11 +26,11 @@ class MoviesBloc extends ChangeNotifier {
 
   var movieHistory = new List<Movie>();
 
-  List<Movie> userWatchedMovies;
-  List<Movie> userToWatchMovies;
-  List<Movie> userFavouriteMovies;
+  List<Movie> _userWatchedMovies;
+  List<Movie> _userToWatchMovies;
+  List<Movie> _userFavouriteMovies;
 
-  Future<void> init() async {
+  Future<void> init(int userId) async {
     print('movies bloc initializing');
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     var filters = jsonDecode(_prefs.getString(kFilters) ?? '{}');
@@ -40,6 +41,43 @@ class MoviesBloc extends ChangeNotifier {
     this._filterYear = filters[kYear] ?? 0;
     this._filterVoteCount = filters[kVotes] ?? 0;
     this._filterExcludeWatched = filters[kExcludeWatched] ?? false;
+
+    if (userId != null) await this._getUserLists(userId);
+    await this._getRandomMovie();
+  }
+
+  get userWatchedMovies => _userWatchedMovies;
+  get userToWatchMovies => _userToWatchMovies;
+  get userFavouriteMovies => _userFavouriteMovies;
+
+  void addUserWatchedMovie(Movie m) {
+    this._userWatchedMovies.add(m);
+    notifyListeners();
+  }
+
+  void addUserToWatchMovie(Movie m) {
+    this._userToWatchMovies.add(m);
+    notifyListeners();
+  }
+
+  void addUserFavouriteMovie(Movie m) {
+    this._userFavouriteMovies.add(m);
+    notifyListeners();
+  }
+
+  void removeUserWatchedMovie(Movie m) {
+    this._userWatchedMovies.remove(m);
+    notifyListeners();
+  }
+
+  void removeUserToWatchMovie(Movie m) {
+    this._userToWatchMovies.remove(m);
+    notifyListeners();
+  }
+
+  void removeUserFavouriteMovie(Movie m) {
+    this._userFavouriteMovies.remove(m);
+    notifyListeners();
   }
 
   bool get loading => _loading;
@@ -47,11 +85,6 @@ class MoviesBloc extends ChangeNotifier {
   String get error => _error;
 
   Movie get currentMovie => _currentMovie;
-
-  set currentMovie(Movie movie) {
-    _currentMovie = movie;
-    notifyListeners();
-  }
 
   List<Genre> get allGenres => _allGenres;
 
@@ -105,11 +138,17 @@ class MoviesBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Movie> getRandomMovie() async {
+  Future<void> getRandomMovie() async {
     _loading = true;
+    notifyListeners();
 
-    Movie m;
+    await this._getRandomMovie();
 
+    _loading = false;
+    notifyListeners();
+  }
+
+  Future<void> _getRandomMovie() async {
     var rndMovie = new RandomMovieRepository(
         withGenres: this._filterWithGenres,
         withoutGenres: this._filterWithoutGenres,
@@ -121,23 +160,45 @@ class MoviesBloc extends ChangeNotifier {
     var response = await rndMovie.getMovieAndGenres();
     if (response.hasError) {
       _error = response.error;
-      m = null;
     } else {
       _error = '';
       this._currentMovie = response.movie;
       this.movieHistory.add(response.movie);
-      m = response.movie;
     }
+  }
+
+  Future<void> getUserLists(int userId) async {
+    _loading = true;
+    notifyListeners();
+
+    await this._getUserLists(userId);
 
     _loading = false;
+    notifyListeners();
+  }
 
-    return m;
+  Future<void> _getUserLists(int userId) async {
+    final _userRep = new UserListsRepository();
+
+    final response = await _userRep.getWatched(userId);
+    if (response.hasError)
+      _error = response.error;
+    else {
+      this._userWatchedMovies = response.watched;
+    }
+
+    final towatch = await _userRep.getToWatch(userId);
+    if (towatch.hasError)
+      _error = towatch.error;
+    else {
+      this._userToWatchMovies = towatch.towatch;
+    }
   }
 
   clearUserLists() {
-    userFavouriteMovies = null;
-    userToWatchMovies = null;
-    userWatchedMovies = null;
+    _userFavouriteMovies = null;
+    _userToWatchMovies = null;
+    _userWatchedMovies = null;
     notifyListeners();
   }
 }

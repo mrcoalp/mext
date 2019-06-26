@@ -1,7 +1,6 @@
 import 'package:MEXT/blocs/auth_bloc.dart';
 import 'package:MEXT/blocs/movies_bloc.dart';
 import 'package:MEXT/data/models/movie.dart';
-import 'package:MEXT/data/repositories/user_lists_repository.dart';
 import 'package:MEXT/ui/app.dart';
 import 'package:MEXT/ui/error_widget.dart';
 import 'package:flutter/material.dart';
@@ -16,9 +15,6 @@ class UserListsScreen extends StatefulWidget {
 
 class _UserListsScreenState extends State<UserListsScreen> {
   List<Movie> _watched = [], _toWatch = [];
-  final _userRep = new UserListsRepository();
-  bool _loading = false;
-  String _error = '';
   var _screen = Screen.WATCHED;
 
   void _changeScreen(Screen s) {
@@ -31,21 +27,11 @@ class _UserListsScreenState extends State<UserListsScreen> {
     final AuthBloc _authBloc = Provider.of<AuthBloc>(context);
     final MoviesBloc _moviesBloc = Provider.of<MoviesBloc>(context);
 
-    if (_moviesBloc.userWatchedMovies == null &&
-        _error == '' &&
-        _authBloc.userId != null)
-      this._getWatchedMovies(_authBloc.userId, _moviesBloc);
-    else {
-      _watched = _moviesBloc.userWatchedMovies ?? [];
-    }
+    this._watched = _moviesBloc.userWatchedMovies ?? [];
+    this._toWatch = _moviesBloc.userToWatchMovies ?? [];
 
-    if (_moviesBloc.userToWatchMovies == null &&
-        _error == '' &&
-        _authBloc.userId != null)
-      this._getToWatchMovies(_authBloc.userId, _moviesBloc);
-    else {
-      _toWatch = _moviesBloc.userToWatchMovies ?? [];
-    }
+    bool _loading = _moviesBloc.loading;
+    String _error = _moviesBloc.error;
 
     return Scaffold(
       appBar: AppBar(
@@ -61,10 +47,9 @@ class _UserListsScreenState extends State<UserListsScreen> {
                 ))
               : IconButton(
                   icon: Icon(Icons.refresh),
-                  onPressed: () {
-                    _getWatchedMovies(_authBloc.userId, _moviesBloc);
-                    _getToWatchMovies(_authBloc.userId, _moviesBloc);
-                  },
+                  onPressed: () => _authBloc.userId != null
+                      ? _moviesBloc.getUserLists(_authBloc.userId)
+                      : null,
                 )
         ],
         title: Row(
@@ -122,35 +107,5 @@ class _UserListsScreenState extends State<UserListsScreen> {
               ),
             ),
     );
-  }
-
-  Future<void> _getWatchedMovies(int userId, MoviesBloc mb) async {
-    setState(() => _loading = true);
-
-    final response = await _userRep.getWatched(userId);
-    if (response.hasError)
-      _error = response.error;
-    else {
-      _error = '';
-      _watched = response.watched;
-      mb.userWatchedMovies = response.watched;
-    }
-
-    setState(() => _loading = false);
-  }
-
-  Future<void> _getToWatchMovies(int userId, MoviesBloc mb) async {
-    setState(() => _loading = true);
-
-    final response = await _userRep.getToWatch(userId);
-    if (response.hasError)
-      _error = response.error;
-    else {
-      _error = '';
-      _toWatch = response.towatch;
-      mb.userToWatchMovies = response.towatch;
-    }
-
-    setState(() => _loading = false);
   }
 }

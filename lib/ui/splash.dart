@@ -15,7 +15,7 @@ class SplashScreen extends StatelessWidget {
 
     _auth.init().then((_) {
       print('auth bloc initialized');
-      _movies.init().then((_) {
+      _movies.init(_auth.userId).then((_) {
         print('movies bloc initialized');
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => MovieTabs()),
@@ -24,10 +24,21 @@ class SplashScreen extends StatelessWidget {
     });
 
     return Container(
-      color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.all(100.0),
-        child: Image.asset('assets/img/mext_logo_NB.png'),
+      color: Theme.of(context).primaryColor,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            color: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.all(100.0),
+              child: Image.asset('assets/img/mext_logo_NB.png'),
+            ),
+          ),
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation(Theme.of(context).accentColor),
+          )
+        ],
       ),
     );
   }

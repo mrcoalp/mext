@@ -306,7 +306,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
         case UserList.Watched:
           {
             add = _userListsRep.addWatched;
-            addToBloc = mb.userWatchedMovies.add;
+            addToBloc = mb.addUserWatchedMovie;
             alertTitle = 'Add to watched list?';
             alertContent = 'Add \'${movie.title}\' to watched movies list?';
             toastMsg = '${movie.title} added to watched list';
@@ -315,7 +315,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
         case UserList.ToWatch:
           {
             add = _userListsRep.addToWatch;
-            addToBloc = mb.userToWatchMovies.add;
+            addToBloc = mb.addUserToWatchMovie;
             alertTitle = 'Save to watch later?';
             alertContent = 'Save \'${movie.title}\' to watch later?';
             toastMsg = '${movie.title} saved to watch later';
@@ -382,7 +382,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
         case UserList.Watched:
           {
             remove = _userListsRep.removeWatched;
-            removeFromBloc = mb.userWatchedMovies.remove;
+            removeFromBloc = mb.removeUserWatchedMovie;
             alertTitle = 'Remove from watched list?';
             alertContent =
                 'Remove \'${movie.title}\' from watched movies list?';
@@ -392,7 +392,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
         case UserList.ToWatch:
           {
             remove = _userListsRep.removeToWatch;
-            removeFromBloc = mb.userToWatchMovies.remove;
+            removeFromBloc = mb.removeUserToWatchMovie;
             alertTitle = 'Remove from watch later?';
             alertContent = 'Remove \'${movie.title}\' from watch later?';
             toastMsg = '${movie.title} removed from watch later';

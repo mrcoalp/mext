@@ -1,4 +1,5 @@
 import 'package:MEXT/blocs/auth_bloc.dart';
+import 'package:MEXT/blocs/movies_bloc.dart';
 import 'package:MEXT/constants.dart';
 import 'package:MEXT/data/repositories/auth_repository.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,8 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
     setState(() {});
   }
 
-  Future<void> _login(String user, String password, AuthBloc ab) async {
+  Future<void> _login(
+      String user, String password, AuthBloc ab, MoviesBloc mb) async {
     setState(() => _loading = true);
 
     final auth = new AuthRepository();
@@ -41,6 +43,7 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
       await prefs.setString(kRefreshToken, response.refreshToken);
 
       ab.userId = response.userId;
+      await mb.getUserLists(response.userId);
 
       Navigator.of(context).pop();
 
@@ -148,6 +151,7 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     final AuthBloc _ab = Provider.of<AuthBloc>(context);
+    final MoviesBloc _mb = Provider.of<MoviesBloc>(context);
 
     final _username = TextField(
       controller: _userCtrl,
@@ -200,7 +204,7 @@ class _LoginState extends State<Login> {
             child: Text('Login'),
             onPressed: () {
               if (_userCtrl.text.isNotEmpty && _passwordCtrl.text.isNotEmpty)
-                widget.login(_userCtrl.text, _passwordCtrl.text, _ab);
+                widget.login(_userCtrl.text, _passwordCtrl.text, _ab, _mb);
               else
                 setState(() => _errorLogin = '*all fields mandatory');
             },
