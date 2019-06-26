@@ -25,7 +25,7 @@ class GenresRepository {
 
   List<Genre> loadFromConstants() {
     var genres = new List<Genre>();
-    for (var j in kgenres) genres.add(new Genre.fromJson(j));
+    for (var j in lGenres) genres.add(new Genre.fromJson(j));
     return genres;
   }
 }

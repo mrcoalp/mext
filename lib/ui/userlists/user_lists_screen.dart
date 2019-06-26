@@ -38,20 +38,20 @@ class _UserListsScreenState extends State<UserListsScreen> {
         elevation: 0,
         centerTitle: true,
         leading: null,
-        actions: <Widget>[
-          _loading
-              ? Center(
-                  child: CircularProgressIndicator(
-                  valueColor:
-                      AlwaysStoppedAnimation(Theme.of(context).accentColor),
-                ))
-              : IconButton(
-                  icon: Icon(Icons.refresh),
-                  onPressed: () => _authBloc.userId != null
-                      ? _moviesBloc.getUserLists(_authBloc.userId)
-                      : null,
-                )
-        ],
+        // actions: <Widget>[
+        //   _loading
+        //       ? Center(
+        //           child: CircularProgressIndicator(
+        //           valueColor:
+        //               AlwaysStoppedAnimation(Theme.of(context).accentColor),
+        //         ))
+        //       : IconButton(
+        //           icon: Icon(Icons.refresh),
+        //           onPressed: () => _authBloc.userId != null
+        //               ? _moviesBloc.getUserLists(_authBloc.userId)
+        //               : null,
+        //         )
+        // ],
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
@@ -74,38 +74,43 @@ class _UserListsScreenState extends State<UserListsScreen> {
           ],
         ),
       ),
-      body: _authBloc.userId != null
-          ? _loading
-              ? Center(
-                  child: CircularProgressIndicator(
-                    valueColor:
-                        AlwaysStoppedAnimation(Theme.of(context).accentColor),
+      body: RefreshIndicator(
+        onRefresh: () => _authBloc.userId != null
+            ? _moviesBloc.getUserLists(_authBloc.userId)
+            : null,
+        child: _authBloc.userId != null
+            ? _loading
+                ? Center(
+                    child: CircularProgressIndicator(
+                      valueColor:
+                          AlwaysStoppedAnimation(Theme.of(context).accentColor),
+                    ),
+                  )
+                : _error == ''
+                    ? _screen == Screen.WATCHED
+                        ? ListView(
+                            children: <Widget>[
+                              for (Movie m in _watched) MovieCard(movie: m),
+                            ],
+                          )
+                        : ListView(
+                            children: <Widget>[
+                              for (Movie m in _toWatch) MovieCard(movie: m),
+                            ],
+                          )
+                    : CustomErrorWidget(
+                        error: _error,
+                      )
+            : Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'You must be logged in to access your movie lists',
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                )
-              : _error == ''
-                  ? _screen == Screen.WATCHED
-                      ? ListView(
-                          children: <Widget>[
-                            for (Movie m in _watched) MovieCard(movie: m),
-                          ],
-                        )
-                      : ListView(
-                          children: <Widget>[
-                            for (Movie m in _toWatch) MovieCard(movie: m),
-                          ],
-                        )
-                  : CustomErrorWidget(
-                      error: _error,
-                    )
-          : Center(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'You must be logged in to access your movie lists',
-                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
-            ),
+      ),
     );
   }
 }

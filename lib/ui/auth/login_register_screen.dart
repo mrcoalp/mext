@@ -107,7 +107,7 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
                           '$_msg',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            color: Colors.white,
+                            color: Colors.amber,
                           ),
                         ),
                       ),
@@ -203,9 +203,10 @@ class _LoginState extends State<Login> {
             textColor: Colors.white,
             child: Text('Login'),
             onPressed: () {
-              if (_userCtrl.text.isNotEmpty && _passwordCtrl.text.isNotEmpty)
+              if (_userCtrl.text.isNotEmpty && _passwordCtrl.text.isNotEmpty) {
+                setState(() => _errorLogin = '');
                 widget.login(_userCtrl.text, _passwordCtrl.text, _ab, _mb);
-              else
+              } else
                 setState(() => _errorLogin = '*all fields mandatory');
             },
           ),
@@ -359,10 +360,11 @@ class _RegisterState extends State<Register> {
                 setState(() => _errorRegister = '*passwords do not match');
               else if (_usernameCtrl.text.isNotEmpty &&
                   _emailCtrl.text.isNotEmpty &&
-                  _passwordCtrl.text.isNotEmpty)
+                  _passwordCtrl.text.isNotEmpty) {
+                setState(() => _errorRegister = '');
                 widget.register(_nameCtrl.text, _usernameCtrl.text,
                     _emailCtrl.text, _passwordCtrl.text);
-              else
+              } else
                 setState(() =>
                     _errorRegister = '*username, email and password mandatory');
             },

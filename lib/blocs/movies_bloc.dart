@@ -11,6 +11,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class MoviesBloc extends ChangeNotifier {
   MoviesBloc();
 
+  final _userRep = new UserListsRepository();
+
   bool _loading = false;
   String _error = '';
 
@@ -50,34 +52,64 @@ class MoviesBloc extends ChangeNotifier {
   get userToWatchMovies => _userToWatchMovies;
   get userFavouriteMovies => _userFavouriteMovies;
 
-  void addUserWatchedMovie(Movie m) {
-    this._userWatchedMovies.add(m);
-    notifyListeners();
+  Future<void> addUserWatchedMovie(int userId, Movie movie) async {
+    final response = await _userRep.addWatched(userId, movie);
+    if (response.hasError)
+      throw response.error;
+    else {
+      this._userWatchedMovies.add(movie);
+      notifyListeners();
+    }
   }
 
-  void addUserToWatchMovie(Movie m) {
-    this._userToWatchMovies.add(m);
-    notifyListeners();
+  Future<void> addUserToWatchMovie(int userId, Movie movie) async {
+    final response = await _userRep.addToWatch(userId, movie);
+    if (response.hasError)
+      throw response.error;
+    else {
+      this._userToWatchMovies.add(movie);
+      notifyListeners();
+    }
   }
 
-  void addUserFavouriteMovie(Movie m) {
-    this._userFavouriteMovies.add(m);
-    notifyListeners();
+  Future<void> addUserFavouriteMovie(int userId, Movie movie) async {
+    final response = await _userRep.addFavourites(userId, movie);
+    if (response.hasError)
+      throw response.error;
+    else {
+      this._userFavouriteMovies.add(movie);
+      notifyListeners();
+    }
   }
 
-  void removeUserWatchedMovie(Movie m) {
-    this._userWatchedMovies.remove(m);
-    notifyListeners();
+  Future<void> removeUserWatchedMovie(int userId, Movie movie) async {
+    final response = await _userRep.removeWatched(userId, movie);
+    if (response.hasError)
+      throw response.error;
+    else {
+      this._userWatchedMovies.remove(movie);
+      notifyListeners();
+    }
   }
 
-  void removeUserToWatchMovie(Movie m) {
-    this._userToWatchMovies.remove(m);
-    notifyListeners();
+  Future<void> removeUserToWatchMovie(int userId, Movie movie) async {
+    final response = await _userRep.removeToWatch(userId, movie);
+    if (response.hasError)
+      throw response.error;
+    else {
+      this._userToWatchMovies.remove(movie);
+      notifyListeners();
+    }
   }
 
-  void removeUserFavouriteMovie(Movie m) {
-    this._userFavouriteMovies.remove(m);
-    notifyListeners();
+  Future<void> removeUserFavouriteMovie(int userId, Movie movie) async {
+    final response = await _userRep.removeFavourites(userId, movie);
+    if (response.hasError)
+      throw response.error;
+    else {
+      this._userFavouriteMovies.remove(movie);
+      notifyListeners();
+    }
   }
 
   bool get loading => _loading;
@@ -178,8 +210,6 @@ class MoviesBloc extends ChangeNotifier {
   }
 
   Future<void> _getUserLists(int userId) async {
-    final _userRep = new UserListsRepository();
-
     final response = await _userRep.getWatched(userId);
     if (response.hasError)
       _error = response.error;
@@ -192,6 +222,13 @@ class MoviesBloc extends ChangeNotifier {
       _error = towatch.error;
     else {
       this._userToWatchMovies = towatch.towatch;
+    }
+
+    final favourites = await _userRep.getFavourites(userId);
+    if (favourites.hasError)
+      _error = favourites.error;
+    else {
+      this._userFavouriteMovies = favourites.favourites;
     }
   }
 

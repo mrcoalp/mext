@@ -1,10 +1,10 @@
 import 'package:MEXT/blocs/auth_bloc.dart';
 import 'package:MEXT/blocs/movies_bloc.dart';
+import 'package:MEXT/constants.dart';
 import 'package:MEXT/data/models/genre.dart';
 import 'package:MEXT/data/models/movie.dart';
 import 'package:MEXT/data/models/movie_info.dart';
 import 'package:MEXT/data/repositories/movie_details_repository.dart';
-import 'package:MEXT/data/repositories/user_lists_repository.dart';
 import 'package:MEXT/ui/app.dart';
 import 'package:MEXT/ui/error_widget.dart';
 import 'package:flushbar/flushbar.dart';
@@ -27,14 +27,13 @@ class MovieDetailsScreen extends StatefulWidget {
 
 class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   final _movieDetails = const MovieDetailsRepository();
-  final _userListsRep = const UserListsRepository();
   bool _loadingMoreInfo = false;
   bool _loadingSimilar = false;
   String _error = '';
   List<String> _trailers;
   MovieInfo _movieInfo;
   List<Movie> _similar;
-  List<Movie> _watched, _towatch, favourites;
+  List<Movie> _watched, _towatch, _favourites;
 
   @override
   void initState() {
@@ -58,6 +57,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
 
     _watched = _moviesBloc.userWatchedMovies ?? [];
     _towatch = _moviesBloc.userToWatchMovies ?? [];
+    _favourites = _moviesBloc.userFavouriteMovies ?? [];
 
     String _genresString = '';
     for (Genre g in widget._movie.genres)
@@ -128,8 +128,21 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 widget._movie, _moviesBloc),
                       ),
                       IconButton(
-                        icon: Icon(FontAwesomeIcons.heart),
-                        onPressed: null,
+                        icon: Icon(
+                          FontAwesomeIcons.heart,
+                          color: _favourites.indexWhere(
+                                      (m) => m.id == widget._movie.id) >=
+                                  0
+                              ? Theme.of(context).accentColor
+                              : Theme.of(context).textTheme.body1.color,
+                        ),
+                        onPressed: () => _favourites.indexWhere(
+                                    (m) => m.id == widget._movie.id) >=
+                                0
+                            ? _removeFromList(UserList.Favourites,
+                                _authBloc.userId, widget._movie, _moviesBloc)
+                            : _addToList(UserList.Favourites, _authBloc.userId,
+                                widget._movie, _moviesBloc),
                       ),
                     ],
                   ),
@@ -165,8 +178,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                   TrailerThumbnail(
                                     t,
                                     () async {
-                                      await _launchURL(
-                                          'https://www.youtube.com/watch?v=$t');
+                                      await _launchURL('$sYouTubePath$t');
                                     },
                                   ),
                                 SizedBox(height: 10),
@@ -187,13 +199,13 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                       color: Colors.amber,
                                       child: Text('IMDB'),
                                       onPressed: () => _launchURL(
-                                          'https://www.imdb.com/title/${_movieInfo.imdb_id}'),
+                                          '$sIMDBPath${_movieInfo.imdb_id}'),
                                     ),
                                     SizedBox(width: 10),
                                     IconButton(
                                       icon: Icon(Icons.share),
                                       onPressed: () => Share.share(
-                                          'Check out this movie I discovered on MEXT!: https://www.imdb.com/title/${_movieInfo.imdb_id}'),
+                                          'Check out this movie I discovered on MEXT!: $sIMDBPath${_movieInfo.imdb_id}'),
                                     )
                                   ],
                                 ),
@@ -298,15 +310,14 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
 
   Future<void> _addToList(
       UserList list, int id, Movie movie, MoviesBloc mb) async {
-    Function add, addToBloc;
+    Function add;
     String alertTitle, alertContent, toastMsg;
 
     if (id != null) {
       switch (list) {
         case UserList.Watched:
           {
-            add = _userListsRep.addWatched;
-            addToBloc = mb.addUserWatchedMovie;
+            add = mb.addUserWatchedMovie;
             alertTitle = 'Add to watched list?';
             alertContent = 'Add \'${movie.title}\' to watched movies list?';
             toastMsg = '${movie.title} added to watched list';
@@ -314,11 +325,18 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
           }
         case UserList.ToWatch:
           {
-            add = _userListsRep.addToWatch;
-            addToBloc = mb.addUserToWatchMovie;
+            add = mb.addUserToWatchMovie;
             alertTitle = 'Save to watch later?';
             alertContent = 'Save \'${movie.title}\' to watch later?';
             toastMsg = '${movie.title} saved to watch later';
+            break;
+          }
+        case UserList.Favourites:
+          {
+            add = mb.addUserFavouriteMovie;
+            alertTitle = 'Add to favourites?';
+            alertContent = 'Add \'${movie.title}\' to favourites?';
+            toastMsg = '${movie.title} added to favourites';
             break;
           }
 
@@ -340,19 +358,8 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 FlatButton(
                   child: Text('YES'),
                   onPressed: () async {
-                    final response = await add(id, movie);
-                    if (response.hasError) {
-                      Navigator.of(context).pop();
-
-                      setState(() {});
-
-                      Flushbar(
-                        message: '${response.error}',
-                        duration: Duration(seconds: 2),
-                      )..show(context);
-                    } else {
-                      _error = '';
-                      addToBloc(widget._movie);
+                    try {
+                      await add(id, movie);
 
                       Navigator.of(context).pop();
 
@@ -360,6 +367,15 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
 
                       Flushbar(
                         message: toastMsg,
+                        duration: Duration(seconds: 2),
+                      )..show(context);
+                    } catch (e) {
+                      Navigator.of(context).pop();
+
+                      setState(() {});
+
+                      Flushbar(
+                        message: e.toString(),
                         duration: Duration(seconds: 2),
                       )..show(context);
                     }
@@ -374,15 +390,14 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
 
   Future<void> _removeFromList(
       UserList list, int id, Movie movie, MoviesBloc mb) async {
-    Function remove, removeFromBloc;
+    Function remove;
     String alertTitle, alertContent, toastMsg;
 
     if (id != null) {
       switch (list) {
         case UserList.Watched:
           {
-            remove = _userListsRep.removeWatched;
-            removeFromBloc = mb.removeUserWatchedMovie;
+            remove = mb.removeUserWatchedMovie;
             alertTitle = 'Remove from watched list?';
             alertContent =
                 'Remove \'${movie.title}\' from watched movies list?';
@@ -391,11 +406,18 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
           }
         case UserList.ToWatch:
           {
-            remove = _userListsRep.removeToWatch;
-            removeFromBloc = mb.removeUserToWatchMovie;
+            remove = mb.removeUserToWatchMovie;
             alertTitle = 'Remove from watch later?';
             alertContent = 'Remove \'${movie.title}\' from watch later?';
             toastMsg = '${movie.title} removed from watch later';
+            break;
+          }
+        case UserList.Favourites:
+          {
+            remove = mb.removeUserFavouriteMovie;
+            alertTitle = 'Remove from favourites?';
+            alertContent = 'Remove \'${movie.title}\' from favourites?';
+            toastMsg = '${movie.title} removed from favourites';
             break;
           }
 
@@ -417,26 +439,23 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 FlatButton(
                   child: Text('YES'),
                   onPressed: () async {
-                    final response = await remove(id, movie);
-                    if (response.hasError) {
-                      Navigator.of(context).pop();
-
-                      setState(() {});
-
-                      Flushbar(
-                        message: '${response.error}',
-                        duration: Duration(seconds: 2),
-                      )..show(context);
-                    } else {
-                      _error = '';
-                      removeFromBloc(widget._movie);
-
+                    try {
+                      await remove(id, movie);
                       Navigator.of(context).pop();
 
                       setState(() {});
 
                       Flushbar(
                         message: toastMsg,
+                        duration: Duration(seconds: 2),
+                      )..show(context);
+                    } catch (e) {
+                      Navigator.of(context).pop();
+
+                      setState(() {});
+
+                      Flushbar(
+                        message: e.toString(),
                         duration: Duration(seconds: 2),
                       )..show(context);
                     }

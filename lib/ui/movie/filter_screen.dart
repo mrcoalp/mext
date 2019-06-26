@@ -45,14 +45,16 @@ class _FilterScreenState extends State<FilterScreen> {
     final MoviesBloc _moviesBloc = Provider.of<MoviesBloc>(context);
     final AuthBloc _authBloc = Provider.of<AuthBloc>(context);
 
+    print('filter screen');
+
     _allGenres = [];
-    for (var g in kgenres) _allGenres.add(new Genre.fromJson(g));
+    for (var g in lGenres) _allGenres.add(new Genre.fromJson(g));
     _allGenres.sort((a, b) => a.name.compareTo(b.name));
     _withGenres.genres = _moviesBloc.filterWithGenres != ''
-        ? _moviesBloc.filterWithGenres.split(',')
+        ? _moviesBloc.filterWithGenres?.split(',') ?? []
         : [];
     _withoutGenres.genres = _moviesBloc.filterWithoutGenres != ''
-        ? _moviesBloc.filterWithoutGenres.split(',')
+        ? _moviesBloc.filterWithoutGenres?.split(',') ?? []
         : [];
     _rating = _moviesBloc.filterRating;
     if (_ratingCtrl.text == '') _ratingCtrl.text = _rating.toString();

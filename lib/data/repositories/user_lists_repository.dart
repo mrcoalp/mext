@@ -81,4 +81,41 @@ class UserListsRepository {
       return new UserListsResponse.withError(e.toString());
     }
   }
+
+  Future<UserListsResponse> getFavourites(int id) async {
+    String uri = '${Config.API_URL}/users/$id/favourite_movies';
+    try {
+      final response = await webClient.get(uri);
+      var favourites = new List<Movie>();
+      for (var w in response) favourites.add(new Movie.fromJson(w));
+      return new UserListsResponse.favourites(favourites: favourites);
+    } catch (e) {
+      print(e.toString());
+      return new UserListsResponse.withError(e.toString());
+    }
+  }
+
+  Future<UserListsResponse> addFavourites(int id, Movie movie) async {
+    String uri = '${Config.API_URL}/users/$id/favourite_movies';
+    try {
+      final response = await webClient.post(uri, movie.toJson());
+      return new UserListsResponse.message(
+          message: response['message'] as String);
+    } catch (e) {
+      print(e.toString());
+      return new UserListsResponse.withError(e.toString());
+    }
+  }
+
+  Future<UserListsResponse> removeFavourites(int id, Movie movie) async {
+    String uri = '${Config.API_URL}/users/$id/favourite_movies/${movie.id}';
+    try {
+      final response = await webClient.delete(uri);
+      return new UserListsResponse.message(
+          message: response['message'] as String);
+    } catch (e) {
+      print(e.toString());
+      return new UserListsResponse.withError(e.toString());
+    }
+  }
 }

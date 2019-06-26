@@ -1,5 +1,6 @@
 import 'package:MEXT/ui/drawer/drawer.dart';
 import 'package:MEXT/ui/search/search_screen.dart';
+import 'package:MEXT/ui/userlists/user_favourites_screen.dart';
 import 'package:MEXT/ui/userlists/user_lists_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -73,7 +74,7 @@ class MovieTabs extends StatelessWidget {
             RandomMovieScreen(),
             SearchScreen(),
             UserListsScreen(),
-            Icon(FontAwesomeIcons.heart),
+            FavouriteMoviesScreen(),
           ],
         ),
       ),

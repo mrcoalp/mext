@@ -1,5 +1,7 @@
-const String kTMDBimgPath = 'http://image.tmdb.org/t/p/w780';
-const List<dynamic> kgenres = [
+const String sTMDBimgPath = 'http://image.tmdb.org/t/p/w780';
+const String sYouTubePath = 'https://www.youtube.com/watch?v=';
+const String sIMDBPath = 'https://www.imdb.com/title/';
+const List<dynamic> lGenres = [
   {"id": 12, "name": "Adventure"},
   {"id": 14, "name": "Fantasy"},
   {"id": 16, "name": "Animation"},
