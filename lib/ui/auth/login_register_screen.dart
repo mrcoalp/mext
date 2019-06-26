@@ -34,14 +34,14 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
       var error = response.error.split(':');
       _msg = error.last.toUpperCase();
     } else {
-      ab.userId = response.userId;
-      ab.token = response.token;
-      ab.refreshToken = response.refreshToken;
-
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setInt('userId', ab.userId);
       await prefs.setString('token', ab.token);
       await prefs.setString('refreshToken', ab.refreshToken);
+
+      ab.userId = response.userId;
+      ab.token = response.token;
+      ab.refreshToken = response.refreshToken;
 
       Navigator.of(context).pop();
 

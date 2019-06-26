@@ -58,11 +58,11 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     final MoviesBloc _moviesBloc = Provider.of<MoviesBloc>(context);
     final AuthBloc _authBloc = Provider.of<AuthBloc>(context);
 
-    try {
-      _authBloc.refreshTokens();
-    } catch (e) {
-      print(e.toString());
-    }
+    // try {
+    //   _authBloc.refreshTokens();
+    // } catch (e) {
+    //   print(e.toString());
+    // }
 
     _watched = _moviesBloc.userWatchedMovies ?? [];
     _towatch = _moviesBloc.userToWatchMovies ?? [];
@@ -317,31 +317,31 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     Function add, addToBloc;
     String alertTitle, alertContent, toastMsg;
 
-    switch (list) {
-      case UserList.Watched:
-        {
-          add = _userListsRep.addWatched;
-          addToBloc = mb.userWatchedMovies.add;
-          alertTitle = 'Add to watched list?';
-          alertContent = 'Add \'${movie.title}\' to watched movies list?';
-          toastMsg = '${movie.title} added to watched list';
-          break;
-        }
-      case UserList.ToWatch:
-        {
-          add = _userListsRep.addToWatch;
-          addToBloc = mb.userToWatchMovies.add;
-          alertTitle = 'Save to watch later?';
-          alertContent = 'Save \'${movie.title}\' to watch later?';
-          toastMsg = '${movie.title} saved to watch later';
-          break;
-        }
+    if (id != null) {
+      switch (list) {
+        case UserList.Watched:
+          {
+            add = _userListsRep.addWatched;
+            addToBloc = mb.userWatchedMovies.add;
+            alertTitle = 'Add to watched list?';
+            alertContent = 'Add \'${movie.title}\' to watched movies list?';
+            toastMsg = '${movie.title} added to watched list';
+            break;
+          }
+        case UserList.ToWatch:
+          {
+            add = _userListsRep.addToWatch;
+            addToBloc = mb.userToWatchMovies.add;
+            alertTitle = 'Save to watch later?';
+            alertContent = 'Save \'${movie.title}\' to watch later?';
+            toastMsg = '${movie.title} saved to watch later';
+            break;
+          }
 
-      default:
-        break;
-    }
+        default:
+          break;
+      }
 
-    if (id != null)
       showDialog(
           context: context,
           builder: (ctx) {
@@ -384,7 +384,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
               ],
             );
           });
-    else
+    } else
       _showDialogNotLoggedIn();
   }
 
@@ -393,31 +393,32 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     Function remove, removeFromBloc;
     String alertTitle, alertContent, toastMsg;
 
-    switch (list) {
-      case UserList.Watched:
-        {
-          remove = _userListsRep.removeWatched;
-          removeFromBloc = mb.userWatchedMovies.remove;
-          alertTitle = 'Remove from watched list?';
-          alertContent = 'Remove \'${movie.title}\' from watched movies list?';
-          toastMsg = '${movie.title} removed from watched list';
-          break;
-        }
-      case UserList.ToWatch:
-        {
-          remove = _userListsRep.removeToWatch;
-          removeFromBloc = mb.userToWatchMovies.remove;
-          alertTitle = 'Remove from watch later?';
-          alertContent = 'Remove \'${movie.title}\' from watch later?';
-          toastMsg = '${movie.title} removed from watch later';
-          break;
-        }
+    if (id != null) {
+      switch (list) {
+        case UserList.Watched:
+          {
+            remove = _userListsRep.removeWatched;
+            removeFromBloc = mb.userWatchedMovies.remove;
+            alertTitle = 'Remove from watched list?';
+            alertContent =
+                'Remove \'${movie.title}\' from watched movies list?';
+            toastMsg = '${movie.title} removed from watched list';
+            break;
+          }
+        case UserList.ToWatch:
+          {
+            remove = _userListsRep.removeToWatch;
+            removeFromBloc = mb.userToWatchMovies.remove;
+            alertTitle = 'Remove from watch later?';
+            alertContent = 'Remove \'${movie.title}\' from watch later?';
+            toastMsg = '${movie.title} removed from watch later';
+            break;
+          }
 
-      default:
-        break;
-    }
+        default:
+          break;
+      }
 
-    if (id != null)
       showDialog(
           context: context,
           builder: (ctx) {
@@ -460,7 +461,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
               ],
             );
           });
-    else
+    } else
       _showDialogNotLoggedIn();
   }
 

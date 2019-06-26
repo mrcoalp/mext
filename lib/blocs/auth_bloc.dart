@@ -9,24 +9,22 @@ class AuthBloc extends ChangeNotifier {
   String _refreshToken;
   User _user;
 
-  AuthBloc() {
-    this._init();
-  }
-
-  Future<void> _init() async {
+  Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
-    this.refreshTokens();
+    this._userId = _prefs.getInt('userId');
+    this._token = _prefs.getString('token');
+    this._refreshToken = _prefs.getString('refreshToken');
   }
 
   void refreshTokens() {
     print('refreshing auth tokens...');
-    this._userId = _prefs.getInt('userId');
     this._token = _prefs.getString('token');
     this._refreshToken = _prefs.getString('refreshToken');
   }
 
   void logout() {
     refreshTokens();
+    _userId = null;
     _user = null;
     notifyListeners();
   }

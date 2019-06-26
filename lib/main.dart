@@ -1,5 +1,6 @@
 import 'package:MEXT/blocs/auth_bloc.dart';
 import 'package:MEXT/blocs/movies_bloc.dart';
+import 'package:MEXT/ui/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:MEXT/ui/movie_tabs.dart';
 import 'package:flutter/services.dart';
@@ -58,7 +59,7 @@ class _MEXTState extends State<MEXT> {
             color: Colors.black,
           ),
         ),
-        home: MovieTabs(),
+        home: SplashScreen(),
       ),
     );
   }

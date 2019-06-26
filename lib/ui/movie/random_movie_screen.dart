@@ -42,11 +42,11 @@ class _RandomMovieScreenState extends State<RandomMovieScreen> {
     final MoviesBloc _moviesBloc = Provider.of<MoviesBloc>(context);
     final AuthBloc _authBloc = Provider.of<AuthBloc>(context);
 
-    try {
-      _authBloc.refreshTokens();
-    } catch (e) {
-      print(e.toString());
-    }
+    // try {
+    //   _authBloc.refreshTokens();
+    // } catch (e) {
+    //   print(e.toString());
+    // }
 
     if (_moviesBloc.currentMovie == null && _error == '')
       this._getRandomMovie(_moviesBloc, _authBloc.token);
