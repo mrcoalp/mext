@@ -28,18 +28,18 @@ class AuthBloc extends ChangeNotifier {
     // if (this._userId != null) await this._getUserDetails(_userId);
   }
 
-  Future<void> getUserDetails(int id) async {
+  Future<void> getUserDetails() async {
     _loading = true;
     notifyListeners();
 
-    await this._getUserDetails(id);
+    await this._getUserDetails();
 
     _loading = false;
     notifyListeners();
   }
 
-  Future<void> _getUserDetails(int id) async {
-    var response = await _userRepository.getUserDetails(id);
+  Future<void> _getUserDetails() async {
+    var response = await _userRepository.getUserDetails(this._userId);
     if (response.hasError)
       this._error = response.error;
     else {

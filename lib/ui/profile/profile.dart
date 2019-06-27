@@ -16,8 +16,7 @@ class ProfileScreen extends StatelessWidget {
     bool _loading = _auth.loading;
     String _error = _auth.error;
 
-    if (_user == null && _auth.userId != null)
-      _auth.getUserDetails(_auth.userId);
+    if (_user == null && _auth.userId != null) _auth.getUserDetails();
 
     return Scaffold(
       body: CustomScrollView(
@@ -35,7 +34,7 @@ class ProfileScreen extends StatelessWidget {
                     )
                   : IconButton(
                       icon: Icon(Icons.refresh),
-                      onPressed: () => _auth.getUserDetails(_auth.userId),
+                      onPressed: () => _auth.getUserDetails(),
                     ),
             ],
           ),
@@ -106,7 +105,7 @@ class ProfileScreen extends StatelessWidget {
                       duration: Duration(seconds: 2),
                     )..show(ctx);
 
-                    auth.getUserDetails(auth.userId);
+                    auth.getUserDetails();
                   }
                 },
               ),
@@ -123,7 +122,7 @@ class ProfileScreen extends StatelessWidget {
                       duration: Duration(seconds: 2),
                     )..show(ctx);
 
-                    auth.getUserDetails(auth.userId);
+                    auth.getUserDetails();
                   }
                 },
               ),
