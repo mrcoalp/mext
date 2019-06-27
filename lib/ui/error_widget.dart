@@ -18,6 +18,7 @@ class CustomErrorWidget extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Text(
             error,
+            textAlign: TextAlign.center,
             style: TextStyle(color: Colors.red),
           ),
         ),
