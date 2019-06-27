@@ -91,11 +91,21 @@ class _UserListsScreenState extends State<UserListsScreen> {
                         ? ListView(
                             children: <Widget>[
                               for (Movie m in _watched) MovieCard(movie: m),
+                              _watched.isEmpty
+                                  ? Center(
+                                      child: Text(
+                                          'No movies watched...'))
+                                  : Container()
                             ],
                           )
                         : ListView(
                             children: <Widget>[
                               for (Movie m in _toWatch) MovieCard(movie: m),
+                              _toWatch.isEmpty
+                                  ? Center(
+                                      child: Text(
+                                          'No movies saved to watch later...'))
+                                  : Container()
                             ],
                           )
                     : CustomErrorWidget(

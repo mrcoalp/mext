@@ -47,6 +47,10 @@ class _FavouriteMoviesScreenState extends State<FavouriteMoviesScreen> {
                 : ListView(
                     children: <Widget>[
                       for (Movie m in _favourites) MovieCard(movie: m),
+                      _favourites.isEmpty
+                          ? Center(
+                              child: Text('No movies added to favourites...'))
+                          : Container()
                     ],
                   ),
       ),
