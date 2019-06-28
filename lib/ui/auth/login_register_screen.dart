@@ -1,10 +1,7 @@
 import 'package:MEXT/blocs/auth_bloc.dart';
 import 'package:MEXT/blocs/movies_bloc.dart';
-import 'package:MEXT/constants.dart';
-import 'package:MEXT/data/repositories/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flushbar/flushbar.dart';
 
 enum Screen { LOGIN, REGISTER }
@@ -26,24 +23,16 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
   }
 
   Future<void> _login(
-      String user, String password, AuthBloc ab, MoviesBloc mb) async {
+      String username, String password, AuthBloc ab, MoviesBloc mb) async {
     setState(() => _loading = true);
 
-    final auth = new AuthRepository();
-    var response = await auth.login(user, password);
+    bool logged = await ab.login(username, password);
 
-    if (response.hasError) {
+    if (!logged) {
       FocusScope.of(context).requestFocus(new FocusNode());
-      var error = response.error.split(':');
-      _msg = error.last.toUpperCase();
+      _msg = ab.error;
     } else {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setInt(kUserId, response.userId);
-      await prefs.setString(kToken, response.token);
-      await prefs.setString(kRefreshToken, response.refreshToken);
-
-      ab.userId = response.userId;
-      await mb.getUserLists(response.userId);
+      await mb.getUserLists(ab.userId);
 
       Navigator.of(context).pop();
 
@@ -56,21 +45,18 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
     setState(() => _loading = false);
   }
 
-  Future<void> _register(
-      String name, String username, String email, String password) async {
+  Future<void> _register(String name, String username, String email,
+      String password, AuthBloc ab) async {
     setState(() => _loading = true);
 
-    final auth = new AuthRepository();
-    var response = await auth.register(name, username, email, password);
+    bool registered = await ab.register(name, username, email, password);
 
-    if (response.hasError) {
+    if (!registered) {
       FocusScope.of(context).requestFocus(new FocusNode());
-      var error = response.error.split(':');
-      _msg = error.last.toUpperCase();
+      _msg = ab.error;
     } else {
       _screen = Screen.LOGIN;
-      _msg =
-          '${response.message.toUpperCase()}\n${response.user.username} proceed to login';
+      _msg = 'REGISTERED\n$username proceed to login';
     }
 
     setState(() => _loading = false);
@@ -85,9 +71,11 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
         backgroundColor: Colors.teal,
         actions: <Widget>[
           _loading
-              ? CircularProgressIndicator(
-                  valueColor:
-                      AlwaysStoppedAnimation(Theme.of(context).primaryColor),
+              ? Center(
+                  child: CircularProgressIndicator(
+                    valueColor:
+                        AlwaysStoppedAnimation(Theme.of(context).primaryColor),
+                  ),
                 )
               : Container(),
         ],
@@ -311,6 +299,8 @@ class _RegisterState extends State<Register> {
       return regExp.hasMatch(em);
     }
 
+    final AuthBloc _ab = Provider.of<AuthBloc>(context);
+
     return Center(
       child: ListView(
         shrinkWrap: true,
@@ -363,7 +353,7 @@ class _RegisterState extends State<Register> {
                   _passwordCtrl.text.isNotEmpty) {
                 setState(() => _errorRegister = '');
                 widget.register(_nameCtrl.text, _usernameCtrl.text,
-                    _emailCtrl.text, _passwordCtrl.text);
+                    _emailCtrl.text, _passwordCtrl.text, _ab);
               } else
                 setState(() =>
                     _errorRegister = '*username, email and password mandatory');

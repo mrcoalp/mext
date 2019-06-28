@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:MEXT/constants.dart';
 import 'package:MEXT/data/models/user.dart';
+import 'package:MEXT/data/repositories/auth_repository.dart';
 import 'package:MEXT/data/repositories/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -11,7 +12,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AuthBloc extends ChangeNotifier {
   AuthBloc();
 
-  var _userRepository = new UserRepository();
+  final _userRepository = new UserRepository();
+  final _authRepository = new AuthRepository();
 
   bool _loading = false;
   String _error = '';
@@ -28,13 +30,52 @@ class AuthBloc extends ChangeNotifier {
     // if (this._userId != null) await this._getUserDetails(_userId);
   }
 
+  Future<bool> login(String username, String password) async {
+    final response = await _authRepository.login(username, password);
+
+    if (response.hasError) {
+      final error = response.error.split(':');
+      _error = error.last.toUpperCase();
+
+      return false;
+    } else {
+      _error = '';
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(kUserId, response.userId);
+      await prefs.setString(kToken, response.token);
+      await prefs.setString(kRefreshToken, response.refreshToken);
+
+      this._userId = response.userId;
+      await this._getUserDetails();
+
+      return true;
+    }
+  }
+
+  Future<bool> register(
+      String name, String username, String email, String password) async {
+    final response =
+        await _authRepository.register(name, username, email, password);
+
+    if (response.hasError) {
+      final error = response.error.split(':');
+      _error = error.last.toUpperCase();
+
+      return false;
+    } else {
+      _error = '';
+
+      return true;
+    }
+  }
+
   Future<void> getUserDetails() async {
-    _loading = true;
-    notifyListeners();
+    // _loading = true;
+    // notifyListeners();
 
     await this._getUserDetails();
 
-    _loading = false;
+    // _loading = false;
     notifyListeners();
   }
 

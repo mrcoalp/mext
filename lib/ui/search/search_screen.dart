@@ -39,7 +39,6 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     final _search = TextField(
-      // autofocus: true,
       controller: _searchCtrl,
       keyboardType: TextInputType.text,
       cursorColor: Colors.teal,
@@ -63,20 +62,13 @@ class _SearchScreenState extends State<SearchScreen> {
             title: _search,
             leading: null,
             actions: <Widget>[
-              _loading
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation(
-                            Theme.of(context).accentColor),
-                      ),
-                    )
-                  : IconButton(
-                      icon: Icon(Icons.search),
-                      onPressed: () {
-                        FocusScope.of(context).requestFocus(new FocusNode());
-                        _searchMovies(_searchCtrl.text, 1);
-                      },
-                    )
+              IconButton(
+                icon: Icon(Icons.search),
+                onPressed: () {
+                  FocusScope.of(context).requestFocus(new FocusNode());
+                  _searchMovies(_searchCtrl.text, 1);
+                },
+              )
             ],
             bottom: PreferredSize(
               preferredSize: _size,
@@ -103,7 +95,7 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
           ),
           _loading
-              ? SliverToBoxAdapter(
+              ? SliverFillRemaining(
                   child: Center(
                     child: CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation(

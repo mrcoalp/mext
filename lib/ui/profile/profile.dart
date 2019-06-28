@@ -12,70 +12,107 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final AuthBloc _auth = Provider.of<AuthBloc>(context);
 
-    User _user = _auth.user;
-    bool _loading = _auth.loading;
-    String _error = _auth.error;
-
-    if (_user == null && _auth.userId != null) _auth.getUserDetails();
+    if (_auth.user == null && _auth.userId != null) _auth.getUserDetails();
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: <Widget>[
-          SliverAppBar(
-            elevation: 0,
-            title: Text(_user?.username ?? ''),
-            actions: <Widget>[
-              _loading
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation(
-                            Theme.of(context).accentColor),
-                      ),
-                    )
-                  : IconButton(
-                      icon: Icon(Icons.refresh),
-                      onPressed: () => _auth.getUserDetails(),
-                    ),
-            ],
-          ),
-          SliverList(
-            delegate: SliverChildListDelegate(
-              <Widget>[
-                _loading
-                    ? Center(
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation(
-                              Theme.of(context).accentColor),
-                        ),
-                      )
-                    : _error != ''
-                        ? CustomErrorWidget(
-                            error: _error,
-                          )
-                        : _user != null
-                            ? Column(
-                                children: <Widget>[
-                                  GestureDetector(
-                                    onTap: () =>
-                                        _showModal(context, _user, _auth),
-                                    child: ProfilePicture(
-                                      user: _user,
-                                    ),
-                                  ),
-                                  SizedBox(height: 20),
-                                  Text(_user.name ?? ''),
-                                  SizedBox(height: 10),
-                                  Text(_user.username ?? ''),
-                                  SizedBox(height: 10),
-                                  Text(_user.email ?? ''),
-                                ],
-                              )
-                            : Container(),
-              ],
-            ),
-          )
-        ],
+      appBar: AppBar(
+        elevation: 0,
+        title: Text(_auth.user?.username ?? ''),
       ),
+      body: RefreshIndicator(
+        onRefresh: () => _auth.getUserDetails(),
+        child: ListView(
+          children: <Widget>[
+            _auth.loading
+                ? Center(
+                    child: CircularProgressIndicator(
+                      valueColor:
+                          AlwaysStoppedAnimation(Theme.of(context).accentColor),
+                    ),
+                  )
+                : _auth.error != ''
+                    ? CustomErrorWidget(
+                        error: _auth.error,
+                      )
+                    : _auth.user != null
+                        ? Column(
+                            children: <Widget>[
+                              GestureDetector(
+                                onTap: () =>
+                                    _showModal(context, _auth.user, _auth),
+                                child: ProfilePicture(
+                                  user: _auth.user,
+                                ),
+                              ),
+                              SizedBox(height: 20),
+                              Text(_auth.user.name ?? ''),
+                              SizedBox(height: 10),
+                              Text(_auth.user.username ?? ''),
+                              SizedBox(height: 10),
+                              Text(_auth.user.email ?? ''),
+                            ],
+                          )
+                        : Container(),
+          ],
+        ),
+      ),
+      // body: CustomScrollView(
+      //   slivers: <Widget>[
+      //     SliverAppBar(
+      //       elevation: 0,
+      //       title: Text(_auth.user?.username ?? ''),
+      //       // actions: <Widget>[
+      //       //   _auth.loading
+      //       //       ? Center(
+      //       //           child: CircularProgressIndicator(
+      //       //             valueColor: AlwaysStoppedAnimation(
+      //       //                 Theme.of(context).accentColor),
+      //       //           ),
+      //       //         )
+      //       //       : IconButton(
+      //       //           icon: Icon(Icons.refresh),
+      //       //           onPressed: () => _auth.getUserDetails(),
+      //       //         ),
+      //       // ],
+      //     ),
+      //     SliverList(
+      //       delegate: SliverChildListDelegate(
+      //         <Widget>[
+      //           _auth.loading
+      //               ? Center(
+      //                   child: CircularProgressIndicator(
+      //                     valueColor: AlwaysStoppedAnimation(
+      //                         Theme.of(context).accentColor),
+      //                   ),
+      //                 )
+      //               : _auth.error != ''
+      //                   ? CustomErrorWidget(
+      //                       error: _auth.error,
+      //                     )
+      //                   : _auth.user != null
+      //                       ? Column(
+      //                           children: <Widget>[
+      //                             GestureDetector(
+      //                               onTap: () =>
+      //                                   _showModal(context, _auth.user, _auth),
+      //                               child: ProfilePicture(
+      //                                 user: _auth.user,
+      //                               ),
+      //                             ),
+      //                             SizedBox(height: 20),
+      //                             Text(_auth.user.name ?? ''),
+      //                             SizedBox(height: 10),
+      //                             Text(_auth.user.username ?? ''),
+      //                             SizedBox(height: 10),
+      //                             Text(_auth.user.email ?? ''),
+      //                           ],
+      //                         )
+      //                       : Container(),
+      //         ],
+      //       ),
+      //     )
+      //   ],
+      // ),
     );
   }
 
