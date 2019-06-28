@@ -6,7 +6,7 @@ import 'package:MEXT/ui/error_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-enum Screen { WATCHED, TOWATCH }
+enum Screen { WATCHED, TOWATCH, FAVOURITES }
 
 class UserListsScreen extends StatefulWidget {
   @override
@@ -14,7 +14,7 @@ class UserListsScreen extends StatefulWidget {
 }
 
 class _UserListsScreenState extends State<UserListsScreen> {
-  List<Movie> _watched = [], _toWatch = [];
+  List<Movie> _watched = [], _toWatch = [], _favourites = [];
   var _screen = Screen.WATCHED;
 
   void _changeScreen(Screen s) {
@@ -29,9 +29,29 @@ class _UserListsScreenState extends State<UserListsScreen> {
 
     this._watched = _moviesBloc.userWatchedMovies ?? [];
     this._toWatch = _moviesBloc.userToWatchMovies ?? [];
+    this._favourites = _moviesBloc.userFavouriteMovies ?? [];
 
     bool _loading = _moviesBloc.loading;
     String _error = _moviesBloc.error;
+
+    Widget _show;
+
+    switch (_screen) {
+      case Screen.WATCHED:
+        _show = WatchedList(watched: _watched);
+
+        break;
+      case Screen.TOWATCH:
+        _show = ToWatchList(toWatch: _toWatch);
+
+        break;
+      case Screen.FAVOURITES:
+        _show = FavouritesList(favourites: _favourites);
+
+        break;
+      default:
+        break;
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -56,6 +76,14 @@ class _UserListsScreenState extends State<UserListsScreen> {
               color: _screen == Screen.TOWATCH
                   ? Theme.of(context).textTheme.body1.color.withOpacity(0.07)
                   : Colors.transparent,
+            ),
+            FlatButton(
+              child: Text('Favourites'),
+              onPressed: () => _changeScreen(Screen.FAVOURITES),
+              textColor: Theme.of(context).accentColor,
+              color: _screen == Screen.FAVOURITES
+                  ? Theme.of(context).textTheme.body1.color.withOpacity(0.07)
+                  : Colors.transparent,
             )
           ],
         ),
@@ -73,25 +101,7 @@ class _UserListsScreenState extends State<UserListsScreen> {
                     ),
                   )
                 : _error == ''
-                    ? _screen == Screen.WATCHED
-                        ? ListView(
-                            children: <Widget>[
-                              for (Movie m in _watched) MovieCard(movie: m),
-                              _watched.isEmpty
-                                  ? Center(child: Text('No movies watched...'))
-                                  : Container()
-                            ],
-                          )
-                        : ListView(
-                            children: <Widget>[
-                              for (Movie m in _toWatch) MovieCard(movie: m),
-                              _toWatch.isEmpty
-                                  ? Center(
-                                      child: Text(
-                                          'No movies saved to watch later...'))
-                                  : Container()
-                            ],
-                          )
+                    ? _show
                     : CustomErrorWidget(
                         error: _error,
                       )
@@ -105,6 +115,72 @@ class _UserListsScreenState extends State<UserListsScreen> {
                 ),
               ),
       ),
+    );
+  }
+}
+
+class WatchedList extends StatelessWidget {
+  final List<Movie> watched;
+
+  WatchedList({this.watched});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: <Widget>[
+        for (Movie m in watched) MovieCard(movie: m),
+        if (watched.isEmpty)
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Text('No movies watched...'),
+            ),
+          )
+      ],
+    );
+  }
+}
+
+class ToWatchList extends StatelessWidget {
+  final List<Movie> toWatch;
+
+  ToWatchList({this.toWatch});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: <Widget>[
+        for (Movie m in toWatch) MovieCard(movie: m),
+        if (toWatch.isEmpty)
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Text('No movies saved to watch later...'),
+            ),
+          )
+      ],
+    );
+  }
+}
+
+class FavouritesList extends StatelessWidget {
+  final List<Movie> favourites;
+
+  FavouritesList({this.favourites});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: <Widget>[
+        for (Movie m in favourites) MovieCard(movie: m),
+        if (favourites.isEmpty)
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Text('No movie marked as favourite...'),
+            ),
+          )
+      ],
     );
   }
 }

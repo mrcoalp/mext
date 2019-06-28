@@ -19,6 +19,8 @@ class _MEXTState extends State<MEXT> {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+    // SystemChrome.setSystemUIOverlayStyle(
+    //     SystemUiOverlayStyle(statusBarColor: Colors.white.withOpacity(0.5)));
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<MoviesBloc>.value(

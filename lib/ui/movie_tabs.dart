@@ -1,6 +1,6 @@
 import 'package:MEXT/ui/drawer/drawer.dart';
+import 'package:MEXT/ui/explore/explore_screen.dart';
 import 'package:MEXT/ui/search/search_screen.dart';
-import 'package:MEXT/ui/userlists/user_favourites_screen.dart';
 import 'package:MEXT/ui/userlists/user_lists_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -35,11 +35,14 @@ class MovieTabs extends StatelessWidget {
     return DefaultTabController(
       length: 4,
       child: Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          title: Text('Movies'),
-          centerTitle: true,
-        ),
+        // appBar: PreferredSize(
+        //   preferredSize: Size.fromHeight(40),
+        //   child: AppBar(
+        //     elevation: 0,
+        //     title: Text('Movies'),
+        //     centerTitle: true,
+        //   ),
+        // ),
         drawer: DrawerMEXT(),
         bottomNavigationBar: TabBar(
           tabs: <Widget>[
@@ -51,19 +54,19 @@ class MovieTabs extends StatelessWidget {
             ),
             Tab(
               icon: Icon(
+                FontAwesomeIcons.wpexplorer,
+                size: 16,
+              ),
+            ),
+            Tab(
+              icon: Icon(
                 FontAwesomeIcons.search,
                 size: 16,
               ),
             ),
             Tab(
               icon: Icon(
-                FontAwesomeIcons.film,
-                size: 16,
-              ),
-            ),
-            Tab(
-              icon: Icon(
-                FontAwesomeIcons.heart,
+                FontAwesomeIcons.list,
                 size: 16,
               ),
             ),
@@ -72,9 +75,9 @@ class MovieTabs extends StatelessWidget {
         body: TabBarView(
           children: <Widget>[
             RandomMovieScreen(),
+            ExploreScreen(),
             SearchScreen(),
             UserListsScreen(),
-            FavouriteMoviesScreen(),
           ],
         ),
       ),

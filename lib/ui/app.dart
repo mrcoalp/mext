@@ -327,23 +327,25 @@ class MEXTMovie extends StatelessWidget {
             ? Positioned(
                 right: 10,
                 top: 10,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withOpacity(0.7),
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 8, 11, 9),
-                    child: Center(
-                      child: Icon(
-                        FontAwesomeIcons.eye,
-                        color: Theme.of(context).accentColor,
+                child: SafeArea(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor.withOpacity(0.7),
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 8, 11, 9),
+                      child: Center(
+                        child: Icon(
+                          FontAwesomeIcons.eye,
+                          color: Theme.of(context).accentColor,
+                        ),
                       ),
                     ),
                   ),
                 ),
               )
-            : SizedBox()
+            : SizedBox(),
       ],
     );
   }

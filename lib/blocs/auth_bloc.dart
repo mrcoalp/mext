@@ -142,7 +142,11 @@ class AuthBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void logout() {
+  Future<void> logout() async {
+    await _prefs.remove(kUserId);
+    await _prefs.remove(kToken);
+    await _prefs.remove(kRefreshToken);
+
     _userId = null;
     _user = null;
     notifyListeners();
