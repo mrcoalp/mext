@@ -187,6 +187,40 @@ class MoviePoster extends StatelessWidget {
   }
 }
 
+class MoviePosterNoAnimation extends StatelessWidget {
+  final Movie movie;
+
+  MoviePosterNoAnimation(this.movie);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: GestureDetector(
+        onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => MovieDetailsScreen(movie))),
+        child: Material(
+          elevation: 5,
+          color: Colors.transparent,
+          child: AspectRatio(
+            aspectRatio: 2 / 3,
+            child: Container(
+              width: MediaQuery.of(context).size.width / 3,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4),
+                image: DecorationImage(
+                  image: NetworkImage('$sTMDBimgPath${movie.poster_path}'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class MEXTMovie extends StatelessWidget {
   final Movie movie;
   final String genresString;

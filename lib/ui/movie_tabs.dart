@@ -1,5 +1,5 @@
 import 'package:MEXT/ui/drawer/drawer.dart';
-import 'package:MEXT/ui/explore/explore_screen.dart';
+import 'package:MEXT/ui/discover/discover_screen.dart';
 import 'package:MEXT/ui/search/search_screen.dart';
 import 'package:MEXT/ui/userlists/user_lists_screen.dart';
 import 'package:flutter/material.dart';
@@ -75,7 +75,7 @@ class MovieTabs extends StatelessWidget {
         body: TabBarView(
           children: <Widget>[
             RandomMovieScreen(),
-            ExploreScreen(),
+            DiscoverScreen(),
             SearchScreen(),
             UserListsScreen(),
           ],

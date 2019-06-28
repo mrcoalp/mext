@@ -4,6 +4,7 @@ import 'package:MEXT/ui/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:MEXT/blocs/discover_bloc.dart';
 
 void main() => runApp(MEXT());
 
@@ -28,6 +29,9 @@ class _MEXTState extends State<MEXT> {
         ),
         ChangeNotifierProvider<AuthBloc>.value(
           value: AuthBloc(),
+        ),
+        ChangeNotifierProvider<DiscoverBloc>.value(
+          value: DiscoverBloc(),
         )
       ],
       child: MaterialApp(
