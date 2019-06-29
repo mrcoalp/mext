@@ -52,7 +52,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               preferredSize: Size.fromHeight(40),
               child: Text(''),
             ),
-            leading: Container(),
+            automaticallyImplyLeading: false,
             actions: <Widget>[
               IconButton(
                 icon: Icon(Icons.settings),

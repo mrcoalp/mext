@@ -128,6 +128,7 @@ class _UserListsScreenState extends State<UserListsScreen>
                             pinned: true,
                             floating: true,
                             forceElevated: innerBoxIsScrolled,
+                            automaticallyImplyLeading: false,
                             actions: <Widget>[
                               IconButton(
                                 icon: Icon(Icons.settings),

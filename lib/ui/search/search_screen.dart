@@ -60,7 +60,7 @@ class _SearchScreenState extends State<SearchScreen> {
             floating: true,
             snap: true,
             title: _search,
-            leading: Container(),
+            automaticallyImplyLeading: false,
             actions: <Widget>[
               IconButton(
                 icon: Icon(Icons.search),

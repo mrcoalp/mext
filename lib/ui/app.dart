@@ -60,7 +60,7 @@ class MovieDetailsAppBar extends StatelessWidget {
       expandedHeight: (MediaQuery.of(context).size.height / 3) * 2.5,
       floating: false,
       pinned: true,
-      leading: Container(),
+      automaticallyImplyLeading: false,
       // leading: CircleAvatar(
       //   backgroundColor: Theme.of(context).primaryColor.withOpacity(0.5),
       //   child: IconButton(
