@@ -6,7 +6,9 @@ import 'package:MEXT/data/models/movie.dart';
 import 'package:MEXT/data/models/movie_info.dart';
 import 'package:MEXT/data/repositories/movie_details_repository.dart';
 import 'package:MEXT/ui/app.dart';
+import 'package:MEXT/ui/buttons.dart';
 import 'package:MEXT/ui/error_widget.dart';
+import 'package:MEXT/ui/movie_tabs.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -72,6 +74,24 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
             sliver: SliverList(
               delegate: SliverChildListDelegate(
                 <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      FlatIconButton(
+                        icon: Icons.arrow_back,
+                        text: 'Back',
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                      FlatIconButton(
+                        icon: Icons.home,
+                        text: 'Home',
+                        onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) => MovieTabs())),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
                   Text(
                     '${widget._movie.title}',
                     style: TextStyle(

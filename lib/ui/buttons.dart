@@ -55,3 +55,29 @@ class GenreSelectedButton extends StatelessWidget {
     );
   }
 }
+
+class FlatIconButton extends StatelessWidget {
+  final String text;
+  final IconData icon;
+  final Function onPressed;
+
+  FlatIconButton(
+      {@required this.text, @required this.icon, @required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return FlatButton(
+      textColor: Theme.of(context).accentColor,
+      child: Row(
+        children: <Widget>[
+          Icon(icon),
+          Padding(
+            padding: const EdgeInsets.only(left: 3),
+            child: Text(text),
+          ),
+        ],
+      ),
+      onPressed: onPressed,
+    );
+  }
+}

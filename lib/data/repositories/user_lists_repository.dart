@@ -14,7 +14,7 @@ class UserListsRepository {
       final response = await webClient.get(uri);
       var watched = new List<Movie>();
       for (var w in response) watched.add(new Movie.fromJson(w));
-      return new UserListsResponse.watched(watched: watched);
+      return new UserListsResponse(list: watched);
     } catch (e) {
       print(e.toString());
       return new UserListsResponse.withError(e.toString());
@@ -51,7 +51,7 @@ class UserListsRepository {
       final response = await webClient.get(uri);
       var towatch = new List<Movie>();
       for (var w in response) towatch.add(new Movie.fromJson(w));
-      return new UserListsResponse.toWatch(towatch: towatch);
+      return new UserListsResponse(list: towatch);
     } catch (e) {
       print(e.toString());
       return new UserListsResponse.withError(e.toString());
@@ -88,7 +88,7 @@ class UserListsRepository {
       final response = await webClient.get(uri);
       var favourites = new List<Movie>();
       for (var w in response) favourites.add(new Movie.fromJson(w));
-      return new UserListsResponse.favourites(favourites: favourites);
+      return new UserListsResponse(list: favourites);
     } catch (e) {
       print(e.toString());
       return new UserListsResponse.withError(e.toString());
@@ -113,6 +113,19 @@ class UserListsRepository {
       final response = await webClient.delete(uri);
       return new UserListsResponse.message(
           message: response['message'] as String);
+    } catch (e) {
+      print(e.toString());
+      return new UserListsResponse.withError(e.toString());
+    }
+  }
+
+  Future<UserListsResponse> getSuggested(int id) async {
+    String uri = '${Config.API_URL}/users/$id/suggested_movies';
+    try {
+      final response = await webClient.get(uri);
+      var suggested = new List<Movie>();
+      for (var w in response) suggested.add(new Movie.fromJson(w));
+      return new UserListsResponse(list: suggested);
     } catch (e) {
       print(e.toString());
       return new UserListsResponse.withError(e.toString());

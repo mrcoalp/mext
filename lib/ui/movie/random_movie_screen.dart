@@ -71,7 +71,12 @@ class RandomMovieScreen extends StatelessWidget {
               ),
             )
           : _moviesBloc.error != ''
-              ? Center(child: CustomErrorWidget(error: _moviesBloc.error))
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    CustomErrorWidget(error: _moviesBloc.error)
+                  ],
+                )
               : _movie == null
                   ? Center(
                       child: Container(

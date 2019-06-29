@@ -56,29 +56,30 @@ class MovieDetailsAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
-      backgroundColor: Theme.of(context).primaryColor,
+      backgroundColor: Theme.of(context).primaryColor.withOpacity(0.8),
       expandedHeight: (MediaQuery.of(context).size.height / 3) * 2.5,
       floating: false,
       pinned: true,
-      leading: CircleAvatar(
-        backgroundColor: Theme.of(context).primaryColor.withOpacity(0.5),
-        child: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-          color: Theme.of(context).primaryTextTheme.body1.color,
-        ),
-      ),
-      actions: <Widget>[
-        CircleAvatar(
-          backgroundColor: Theme.of(context).primaryColor.withOpacity(0.5),
-          child: IconButton(
-            icon: Icon(Icons.home),
-            onPressed: () => Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => MovieTabs())),
-            color: Theme.of(context).primaryTextTheme.body1.color,
-          ),
-        ),
-      ],
+      leading: Container(),
+      // leading: CircleAvatar(
+      //   backgroundColor: Theme.of(context).primaryColor.withOpacity(0.5),
+      //   child: IconButton(
+      //     icon: Icon(Icons.arrow_back),
+      //     onPressed: () => Navigator.of(context).pop(),
+      //     color: Theme.of(context).primaryTextTheme.body1.color,
+      //   ),
+      // ),
+      // actions: <Widget>[
+      //   CircleAvatar(
+      //     backgroundColor: Theme.of(context).primaryColor.withOpacity(0.5),
+      //     child: IconButton(
+      //       icon: Icon(Icons.home),
+      //       onPressed: () => Navigator.of(context)
+      //           .push(MaterialPageRoute(builder: (context) => MovieTabs())),
+      //       color: Theme.of(context).primaryTextTheme.body1.color,
+      //     ),
+      //   ),
+      // ],
       flexibleSpace: FlexibleSpaceBar(
         centerTitle: true,
         background: movie.poster_path != null

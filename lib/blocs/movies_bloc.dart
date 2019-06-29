@@ -31,6 +31,7 @@ class MoviesBloc extends ChangeNotifier {
   List<Movie> _userWatchedMovies;
   List<Movie> _userToWatchMovies;
   List<Movie> _userFavouriteMovies;
+  List<Movie> _userSuggestedMovies;
 
   Future<void> init(int userId) async {
     print('movies bloc initializing');
@@ -51,6 +52,7 @@ class MoviesBloc extends ChangeNotifier {
   get userWatchedMovies => _userWatchedMovies;
   get userToWatchMovies => _userToWatchMovies;
   get userFavouriteMovies => _userFavouriteMovies;
+  get userSuggestedMovies => _userSuggestedMovies;
 
   Future<void> addUserWatchedMovie(int userId, Movie movie) async {
     final response = await _userRep.addWatched(userId, movie);
@@ -58,6 +60,8 @@ class MoviesBloc extends ChangeNotifier {
       throw response.error;
     else {
       this._userWatchedMovies.add(movie);
+      int index = this._userToWatchMovies.indexWhere((m) => m.id == movie.id);
+      if (index >= 0) this._userToWatchMovies.removeAt(index);
       notifyListeners();
     }
   }
@@ -110,6 +114,18 @@ class MoviesBloc extends ChangeNotifier {
       this._userFavouriteMovies.remove(movie);
       notifyListeners();
     }
+  }
+
+  Future<void> getUserSuggestedMovies(int userId) async {
+    final response = await _userRep.getSuggested(userId);
+    if (response.hasError) {
+      this._error = response.error;
+      this._userSuggestedMovies = [];
+    } else {
+      this._error = '';
+      this._userSuggestedMovies = response.list;
+    }
+    notifyListeners();
   }
 
   bool get loading => _loading;
@@ -214,21 +230,21 @@ class MoviesBloc extends ChangeNotifier {
     if (response.hasError)
       _error = response.error;
     else {
-      this._userWatchedMovies = response.watched;
+      this._userWatchedMovies = response.list;
     }
 
     final towatch = await _userRep.getToWatch(userId);
     if (towatch.hasError)
       _error = towatch.error;
     else {
-      this._userToWatchMovies = towatch.towatch;
+      this._userToWatchMovies = towatch.list;
     }
 
     final favourites = await _userRep.getFavourites(userId);
     if (favourites.hasError)
       _error = favourites.error;
     else {
-      this._userFavouriteMovies = favourites.favourites;
+      this._userFavouriteMovies = favourites.list;
     }
   }
 

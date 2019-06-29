@@ -7,6 +7,7 @@ class DiscoverBloc extends ChangeNotifier {
 
   List<Movie> _trending, _nowPlaying, _popular, _upcoming;
   String _error = '';
+  bool _loading = false;
 
   List<Movie> get trending => _trending;
   List<Movie> get nowPlaying => _nowPlaying;
@@ -14,6 +15,7 @@ class DiscoverBloc extends ChangeNotifier {
   List<Movie> get upcoming => _upcoming;
 
   String get error => _error;
+  bool get loading => _loading;
 
   final _movieListsRepository = new MovieListsRepository();
 
@@ -70,6 +72,7 @@ class DiscoverBloc extends ChangeNotifier {
   }
 
   Future<void> getMovieLists() async {
+    this._loading = true;
     var response = await _movieListsRepository.getTrending();
     if (response.hasError) {
       _error = response.error;
@@ -78,6 +81,7 @@ class DiscoverBloc extends ChangeNotifier {
       _error = '';
       _trending = response.list;
     }
+    notifyListeners();
 
     response = await _movieListsRepository.getNowPlaying();
     if (response.hasError) {
@@ -87,6 +91,7 @@ class DiscoverBloc extends ChangeNotifier {
       _error = '';
       _nowPlaying = response.list;
     }
+    notifyListeners();
 
     response = await _movieListsRepository.getPopular();
     if (response.hasError) {
@@ -96,6 +101,7 @@ class DiscoverBloc extends ChangeNotifier {
       _error = '';
       _popular = response.list;
     }
+    notifyListeners();
 
     response = await _movieListsRepository.getUpcoming();
     if (response.hasError) {
@@ -105,6 +111,8 @@ class DiscoverBloc extends ChangeNotifier {
       _error = '';
       _upcoming = response.list;
     }
+
+    this._loading = false;
 
     notifyListeners();
   }

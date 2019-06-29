@@ -27,7 +27,7 @@ class AuthBloc extends ChangeNotifier {
     _prefs = await SharedPreferences.getInstance();
     this._userId = _prefs.getInt(kUserId);
 
-    // if (this._userId != null) await this._getUserDetails(_userId);
+    if (this._userId != null) await this._getUserDetails();
   }
 
   Future<bool> login(String username, String password) async {
