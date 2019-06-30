@@ -551,8 +551,11 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
             ),
             FlatButton(
                 child: Text('LOGIN'),
-                onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => LoginRegisterScreen())))
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => LoginRegisterScreen()));
+                })
           ],
         );
       });
