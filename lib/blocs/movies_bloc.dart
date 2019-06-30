@@ -174,7 +174,7 @@ class MoviesBloc extends ChangeNotifier {
   int get filterVoteCount => _filterVoteCount;
 
   set filterVoteCount(int voteCount) {
-    if (voteCount < 0) voteCount = 0;
+    if (voteCount < 0 || voteCount > 10000) voteCount = 0;
     _filterVoteCount = voteCount;
     notifyListeners();
   }

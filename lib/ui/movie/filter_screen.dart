@@ -136,7 +136,7 @@ class _FilterScreenState extends State<FilterScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 20),
                 child: Text(
-                  'Minimum Rating (0-10)',
+                  'Minimum Rating ($_rating)',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
@@ -144,21 +144,34 @@ class _FilterScreenState extends State<FilterScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: TextField(
-                  keyboardType: TextInputType.number,
-                  cursorColor: Colors.teal,
-                  decoration: InputDecoration(
-                    hintText: 'Insert Rating',
-                  ),
+                child: Slider(
+                  min: 0,
+                  max: 8,
+                  divisions: 8,
+                  label: '$_rating',
+                  activeColor: Theme.of(context).accentColor,
+                  inactiveColor: Theme.of(context).accentColor.withOpacity(0.2),
+                  value: _rating.toDouble(),
                   onChanged: (value) {
-                    _moviesBloc.filterRating = int.parse(value);
+                    _moviesBloc.filterRating = value.toInt();
                     _rating = _moviesBloc.filterRating;
                   },
-                  controller: _ratingCtrl,
                 ),
+                // child: TextField(
+                //   keyboardType: TextInputType.number,
+                //   cursorColor: Colors.teal,
+                //   decoration: InputDecoration(
+                //     hintText: 'Insert Rating',
+                //   ),
+                //   onChanged: (value) {
+                //     _moviesBloc.filterRating = int.parse(value);
+                //     _rating = _moviesBloc.filterRating;
+                //   },
+                //   controller: _ratingCtrl,
+                // ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 40),
+                padding: const EdgeInsets.only(top: 20),
                 child: Text(
                   'Minimum Year',
                   style: TextStyle(
