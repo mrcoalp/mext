@@ -6,6 +6,7 @@ import 'package:MEXT/data/models/movie.dart';
 import 'package:MEXT/data/models/movie_info.dart';
 import 'package:MEXT/data/repositories/movie_details_repository.dart';
 import 'package:MEXT/ui/app.dart';
+import 'package:MEXT/ui/auth/login_register_screen.dart';
 import 'package:MEXT/ui/buttons.dart';
 import 'package:MEXT/ui/error_widget.dart';
 import 'package:MEXT/ui/movie_tabs.dart';
@@ -547,7 +548,11 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
             FlatButton(
               child: Text('OK'),
               onPressed: () => Navigator.of(context).pop(),
-            )
+            ),
+            FlatButton(
+                child: Text('LOGIN'),
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => LoginRegisterScreen())))
           ],
         );
       });
