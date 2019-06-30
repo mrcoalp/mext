@@ -40,6 +40,9 @@ class WebClient {
         return '${res.statusCode}: something went wrong';
       }
 
+      if (res.body.contains('bad refreshToken'))
+        return 'Session expired\nProbably accessed your account from other device\nPlease logout and proceed to new login';
+
       final json = jsonDecode(res.body);
       String message = 'message: ${res.statusCode}: ${json['message']}';
       message += json['error'] != null ? ', error: ${json['error']}' : '';

@@ -36,12 +36,26 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   MovieInfo _movieInfo;
   List<Movie> _similar;
   List<Movie> _watched, _towatch, _favourites;
+  // double _bottomContainerWidth = 0;
+  // String _movieTitle = '';
+
+  // Future<void> _animate() async {
+  //   await Future.delayed(Duration(seconds: 1));
+  //   setState(() {
+  //     _bottomContainerWidth = 300;
+  //   });
+  //   await Future.delayed(Duration(seconds: 1));
+  //   setState(() {
+  //     _movieTitle = '${widget._movie.title}';
+  //   });
+  // }
 
   @override
   void initState() {
     super.initState();
     this._getDetails(widget._movie.id);
     this._getSimilar(widget._movie.id);
+    // this._animate();
   }
 
   _launchURL(String url) async {
@@ -66,6 +80,24 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
       _genresString += _genresString != '' ? ', ${g.name}' : g.name;
 
     return Scaffold(
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      // floatingActionButton: AnimatedContainer(
+      //   duration: Duration(seconds: 1),
+      //   width: _bottomContainerWidth,
+      //   decoration: BoxDecoration(
+      //     color: Theme.of(context).accentColor.withOpacity(0.7),
+      //     borderRadius: BorderRadius.circular(30),
+      //   ),
+      //   child: Text(
+      //     _movieTitle,
+      //     textAlign: TextAlign.center,
+      //     style: TextStyle(
+      //       fontWeight: FontWeight.bold,
+      //       fontSize: 20,
+      //       color: Theme.of(context).primaryColor,
+      //     ),
+      //   ),
+      // ),
       body: CustomScrollView(
         slivers: <Widget>[
           MovieDetailsAppBar(movie: widget._movie),
@@ -100,6 +132,79 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     ),
                   ),
                   SizedBox(height: 15),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context)
+                          .textTheme
+                          .body1
+                          .color
+                          .withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        IconButton(
+                          icon: Icon(
+                            FontAwesomeIcons.eye,
+                            size: 16,
+                            color: _watched.indexWhere(
+                                        (m) => m.id == widget._movie.id) >=
+                                    0
+                                ? Theme.of(context).accentColor
+                                : Theme.of(context).textTheme.body1.color,
+                          ),
+                          onPressed: () => _watched.indexWhere(
+                                      (m) => m.id == widget._movie.id) >=
+                                  0
+                              ? _removeFromList(UserList.Watched,
+                                  _authBloc.userId, widget._movie, _moviesBloc)
+                              : _addToList(UserList.Watched, _authBloc.userId,
+                                  widget._movie, _moviesBloc),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            FontAwesomeIcons.clock,
+                            size: 16,
+                            color: _towatch.indexWhere(
+                                        (m) => m.id == widget._movie.id) >=
+                                    0
+                                ? Theme.of(context).accentColor
+                                : Theme.of(context).textTheme.body1.color,
+                          ),
+                          onPressed: () => _towatch.indexWhere(
+                                      (m) => m.id == widget._movie.id) >=
+                                  0
+                              ? _removeFromList(UserList.ToWatch,
+                                  _authBloc.userId, widget._movie, _moviesBloc)
+                              : _addToList(UserList.ToWatch, _authBloc.userId,
+                                  widget._movie, _moviesBloc),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            FontAwesomeIcons.heart,
+                            size: 16,
+                            color: _favourites.indexWhere(
+                                        (m) => m.id == widget._movie.id) >=
+                                    0
+                                ? Theme.of(context).accentColor
+                                : Theme.of(context).textTheme.body1.color,
+                          ),
+                          onPressed: () => _favourites.indexWhere(
+                                      (m) => m.id == widget._movie.id) >=
+                                  0
+                              ? _removeFromList(UserList.Favourites,
+                                  _authBloc.userId, widget._movie, _moviesBloc)
+                              : _addToList(UserList.Favourites,
+                                  _authBloc.userId, widget._movie, _moviesBloc),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 15),
+                  Text(_genresString),
+                  SizedBox(height: 5),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
@@ -109,67 +214,11 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     ],
                   ),
                   SizedBox(height: 5),
-                  Text(_genresString),
-                  SizedBox(height: 15),
-                  Row(
-                    children: <Widget>[
-                      IconButton(
-                        icon: Icon(
-                          FontAwesomeIcons.eye,
-                          color: _watched.indexWhere(
-                                      (m) => m.id == widget._movie.id) >=
-                                  0
-                              ? Theme.of(context).accentColor
-                              : Theme.of(context).textTheme.body1.color,
-                        ),
-                        onPressed: () => _watched.indexWhere(
-                                    (m) => m.id == widget._movie.id) >=
-                                0
-                            ? _removeFromList(UserList.Watched,
-                                _authBloc.userId, widget._movie, _moviesBloc)
-                            : _addToList(UserList.Watched, _authBloc.userId,
-                                widget._movie, _moviesBloc),
-                      ),
-                      IconButton(
-                        icon: Icon(
-                          FontAwesomeIcons.film,
-                          color: _towatch.indexWhere(
-                                      (m) => m.id == widget._movie.id) >=
-                                  0
-                              ? Theme.of(context).accentColor
-                              : Theme.of(context).textTheme.body1.color,
-                        ),
-                        onPressed: () => _towatch.indexWhere(
-                                    (m) => m.id == widget._movie.id) >=
-                                0
-                            ? _removeFromList(UserList.ToWatch,
-                                _authBloc.userId, widget._movie, _moviesBloc)
-                            : _addToList(UserList.ToWatch, _authBloc.userId,
-                                widget._movie, _moviesBloc),
-                      ),
-                      IconButton(
-                        icon: Icon(
-                          FontAwesomeIcons.heart,
-                          color: _favourites.indexWhere(
-                                      (m) => m.id == widget._movie.id) >=
-                                  0
-                              ? Theme.of(context).accentColor
-                              : Theme.of(context).textTheme.body1.color,
-                        ),
-                        onPressed: () => _favourites.indexWhere(
-                                    (m) => m.id == widget._movie.id) >=
-                                0
-                            ? _removeFromList(UserList.Favourites,
-                                _authBloc.userId, widget._movie, _moviesBloc)
-                            : _addToList(UserList.Favourites, _authBloc.userId,
-                                widget._movie, _moviesBloc),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 15),
-                  Text('${widget._movie.release_date}'),
+                  Text('${widget._movie.vote_count} votes'),
                   SizedBox(height: 5),
-                  Text('Vote Count: ${widget._movie.vote_count}'),
+
+                  // SizedBox(height: 15),
+                  Text('${widget._movie.release_date}'),
                   SizedBox(height: 5),
                   Text('Original Title: ${widget._movie.original_title}'),
                   SizedBox(height: 5),
@@ -230,14 +279,14 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                   ],
                                 ),
                                 SizedBox(height: 30),
-                                _similar.length > 0
+                                _similar.isNotEmpty
                                     ? Text(
                                         'Similar Movies',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold),
                                       )
                                     : Container(),
-                                _similar.length > 0
+                                _similar.isNotEmpty
                                     ? Container(
                                         height: 200,
                                         child: ListView(
@@ -249,7 +298,8 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                           ],
                                         ),
                                       )
-                                    : Container()
+                                    : Container(),
+                                // SizedBox(height: 60),
                               ],
                             ),
                 ],

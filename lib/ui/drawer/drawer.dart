@@ -1,5 +1,6 @@
 import 'package:MEXT/blocs/auth_bloc.dart';
 import 'package:MEXT/blocs/movies_bloc.dart';
+import 'package:MEXT/ui/about/about.dart';
 import 'package:MEXT/ui/auth/login_register_screen.dart';
 import 'package:MEXT/ui/movie_tabs.dart';
 import 'package:MEXT/ui/profile/profile.dart';
@@ -102,8 +103,8 @@ class DrawerMEXT extends StatelessWidget {
             title: Text('About'),
             onTap: () {
               // Navigator.pop(context);
-              // Navigator.of(context)
-              //     .push(MaterialPageRoute(builder: (context) => TVTabs()));
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => AboutScreen()));
             },
           ),
           _auth.userId != null

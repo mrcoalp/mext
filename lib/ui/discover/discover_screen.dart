@@ -55,6 +55,14 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             automaticallyImplyLeading: false,
             actions: <Widget>[
               IconButton(
+                icon: Icon(Icons.refresh),
+                onPressed: () async {
+                  setState(() => _loading = true);
+                  await _moviesBloc.getUserSuggestedMovies(_authBloc.userId);
+                  setState(() => _loading = false);
+                },
+              ),
+              IconButton(
                 icon: Icon(Icons.settings),
                 onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => DrawerMEXT())),
@@ -82,7 +90,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(8, 15, 8, 10),
                           child: Text(
-                            'Made for you',
+                            'Made for you, ${_authBloc.user.username}',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 18),
                           ),
