@@ -29,7 +29,7 @@ class SplashScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Container(
-            color: Colors.white,
+            color: Theme.of(context).primaryColor,
             child: Padding(
               padding: const EdgeInsets.all(100.0),
               child: Image.asset('assets/img/mext_logo_NB.png'),

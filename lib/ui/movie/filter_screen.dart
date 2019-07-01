@@ -29,7 +29,7 @@ class _FilterScreenState extends State<FilterScreen> {
   int _voteCount = 0;
   bool _excludeWatched = false;
 
-  var _ratingCtrl = new TextEditingController();
+  // var _ratingCtrl = new TextEditingController();
   var _yearCtrl = new TextEditingController();
   var _voteCountCtrl = new TextEditingController();
 
@@ -56,11 +56,11 @@ class _FilterScreenState extends State<FilterScreen> {
     _withoutGenres.genres = _moviesBloc.filterWithoutGenres != ''
         ? _moviesBloc.filterWithoutGenres?.split(',') ?? []
         : [];
-    _rating = _moviesBloc.filterRating;
-    if (_ratingCtrl.text == '') _ratingCtrl.text = _rating.toString();
-    _year = _moviesBloc.filterYear;
+    _rating = _moviesBloc.filterRating ?? 0;
+    // if (_ratingCtrl.text == '') _ratingCtrl.text = _rating.toString();
+    _year = _moviesBloc.filterYear ?? 0;
     if (_yearCtrl.text == '') _yearCtrl.text = _year.toString();
-    _voteCount = _moviesBloc.filterVoteCount;
+    _voteCount = _moviesBloc.filterVoteCount ?? 0;
     if (_voteCountCtrl.text == '') _voteCountCtrl.text = _voteCount.toString();
     _excludeWatched = _moviesBloc.filterExcludeWatched;
     _handleGenresLists(_moviesBloc);

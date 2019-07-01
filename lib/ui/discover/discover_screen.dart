@@ -5,6 +5,7 @@ import 'package:MEXT/data/models/movie.dart';
 import 'package:MEXT/ui/app.dart';
 import 'package:MEXT/ui/drawer/drawer.dart';
 import 'package:MEXT/ui/error_widget.dart';
+import 'package:MEXT/ui/settings/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -65,7 +66,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               IconButton(
                 icon: Icon(Icons.settings),
                 onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => DrawerMEXT())),
+                    MaterialPageRoute(builder: (context) => SettingsScreen())),
               ),
             ],
           ),

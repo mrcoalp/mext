@@ -33,3 +33,6 @@ const String kRating = 'rating';
 const String kYear = 'year';
 const String kVotes = 'votes';
 const String kExcludeWatched = 'excludeWatched';
+
+enum ThemeMEXT { Automatic, Light, Dark }
+const String kTheme = 'theme';

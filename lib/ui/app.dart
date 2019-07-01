@@ -1,7 +1,6 @@
 import 'package:MEXT/constants.dart';
 import 'package:MEXT/data/models/movie.dart';
 import 'package:MEXT/ui/movie/movie_details_screen.dart';
-import 'package:MEXT/ui/movie_tabs.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -342,7 +341,7 @@ class MEXTMovie extends StatelessWidget {
                           child: Text(
                             'More Info',
                             style: TextStyle(
-                              color: Theme.of(context).primaryColor,
+                              color: Colors.white,
                             ),
                           ),
                           onTap: () => Navigator.of(context).push(

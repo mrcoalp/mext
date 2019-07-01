@@ -131,17 +131,17 @@ class _UserListsScreenState extends State<UserListsScreen>
                             automaticallyImplyLeading: false,
                             actions: <Widget>[
                               IconButton(
-                                icon: Icon(Icons.settings),
-                                onPressed: () => Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                        builder: (context) => DrawerMEXT())),
-                              ),
-                              IconButton(
                                 icon: Icon(Icons.refresh),
                                 onPressed: () => _authBloc.userId != null
                                     ? _moviesBloc.getUserLists(_authBloc.userId)
                                     : null,
-                              )
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.more_vert),
+                                onPressed: () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                        builder: (context) => DrawerMEXT())),
+                              ),
                             ],
                             bottom: TabBar(
                               tabs: <Tab>[

@@ -81,3 +81,18 @@ class FlatIconButton extends StatelessWidget {
     );
   }
 }
+
+class SettingsButton extends StatelessWidget {
+  final Function onPressed;
+  final String text;
+  SettingsButton({@required this.onPressed, @required this.text});
+  @override
+  Widget build(BuildContext context) {
+    return FlatButton(
+      onPressed: onPressed,
+      child: Text(text),
+      textColor: Theme.of(context).textTheme.body1.color,
+      color: Theme.of(context).primaryColor,
+    );
+  }
+}
