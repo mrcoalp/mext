@@ -33,36 +33,22 @@ class MEXT extends StatefulWidget {
 class _MEXTState extends State<MEXT> {
   @override
   Widget build(BuildContext context) {
-    final SettingsBloc _themeBloc = Provider.of<SettingsBloc>(context);
+    final SettingsBloc _settingsBloc = Provider.of<SettingsBloc>(context);
 
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-    // SystemChrome.setSystemUIOverlayStyle(
-    //     SystemUiOverlayStyle(statusBarColor: Colors.white.withOpacity(0.5)));
-    return MaterialApp(
-      theme: _themeBloc.theme,
-      // darkTheme: ThemeData(
-      //   brightness: Brightness.dark,
-      //   primaryColor: Colors.grey[800],
-      //   accentColor: Colors.teal,
-      //   scaffoldBackgroundColor: Colors.grey[800],
-      //   buttonColor: Colors.grey[800],
-      //   appBarTheme: AppBarTheme(
-      //     brightness: Brightness.dark,
-      //     color: Colors.grey[800],
-      //   ),
-      //   cardTheme: CardTheme(
-      //     elevation: 0,
-      //     color: Colors.grey[800],
-      //   ),
-      //   buttonTheme: ButtonThemeData(
-      //     buttonColor: Colors.teal,
-      //     textTheme: ButtonTextTheme.primary,
-      //   ),
-      // ),
-      home: SplashScreen(),
+    return FutureBuilder(
+      future: _settingsBloc.init(),
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        if (snapshot.hasData && snapshot.data)
+          return MaterialApp(
+            theme: _settingsBloc.theme,
+            home: SplashScreen(),
+          );
+        return Container();
+      },
     );
   }
 }

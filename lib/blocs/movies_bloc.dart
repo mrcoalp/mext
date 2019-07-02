@@ -230,6 +230,7 @@ class MoviesBloc extends ChangeNotifier {
     if (response.hasError)
       _error = response.error;
     else {
+      _error = '';
       this._userWatchedMovies = response.list;
     }
 
@@ -237,6 +238,7 @@ class MoviesBloc extends ChangeNotifier {
     if (towatch.hasError)
       _error = towatch.error;
     else {
+      _error = '';
       this._userToWatchMovies = towatch.list;
     }
 
@@ -244,6 +246,7 @@ class MoviesBloc extends ChangeNotifier {
     if (favourites.hasError)
       _error = favourites.error;
     else {
+      _error = '';
       this._userFavouriteMovies = favourites.list;
     }
   }

@@ -3,7 +3,6 @@ import 'package:MEXT/blocs/discover_bloc.dart';
 import 'package:MEXT/blocs/movies_bloc.dart';
 import 'package:MEXT/data/models/movie.dart';
 import 'package:MEXT/ui/app.dart';
-import 'package:MEXT/ui/drawer/drawer.dart';
 import 'package:MEXT/ui/error_widget.dart';
 import 'package:MEXT/ui/settings/settings_screen.dart';
 import 'package:flutter/material.dart';

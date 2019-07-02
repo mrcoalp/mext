@@ -19,12 +19,6 @@ class UserListsScreen extends StatefulWidget {
 class _UserListsScreenState extends State<UserListsScreen>
     with SingleTickerProviderStateMixin {
   List<Movie> _watched = [], _toWatch = [], _favourites = [];
-  // var _screen = Screen.WATCHED;
-
-  // void _changeScreen(Screen s) {
-  //   _screen = s;
-  //   setState(() {});
-  // }
 
   ScrollController _scrollViewController;
   TabController _tabController;
@@ -55,60 +49,7 @@ class _UserListsScreenState extends State<UserListsScreen>
     bool _loading = _moviesBloc.loading;
     String _error = _moviesBloc.error;
 
-    // Widget _show;
-
-    // switch (_screen) {
-    //   case Screen.WATCHED:
-    //     _show = WatchedList(watched: _watched);
-
-    //     break;
-    //   case Screen.TOWATCH:
-    //     _show = ToWatchList(toWatch: _toWatch);
-
-    //     break;
-    //   case Screen.FAVOURITES:
-    //     _show = FavouritesList(favourites: _favourites);
-
-    //     break;
-    //   default:
-    //     break;
-    // }
-
     return Scaffold(
-      // appBar: AppBar(
-      //   elevation: 0,
-      //   centerTitle: true,
-      //   leading: null,
-      //   title: Row(
-      //     mainAxisAlignment: MainAxisAlignment.spaceAround,
-      //     children: <Widget>[
-      //       FlatButton(
-      //         child: Text('Watched'),
-      //         onPressed: () => _changeScreen(Screen.WATCHED),
-      //         textColor: Theme.of(context).accentColor,
-      //         color: _screen == Screen.WATCHED
-      //             ? Theme.of(context).textTheme.body1.color.withOpacity(0.07)
-      //             : Colors.transparent,
-      //       ),
-      //       FlatButton(
-      //         child: Text('To Watch'),
-      //         onPressed: () => _changeScreen(Screen.TOWATCH),
-      //         textColor: Theme.of(context).accentColor,
-      //         color: _screen == Screen.TOWATCH
-      //             ? Theme.of(context).textTheme.body1.color.withOpacity(0.07)
-      //             : Colors.transparent,
-      //       ),
-      //       FlatButton(
-      //         child: Text('Favourites'),
-      //         onPressed: () => _changeScreen(Screen.FAVOURITES),
-      //         textColor: Theme.of(context).accentColor,
-      //         color: _screen == Screen.FAVOURITES
-      //             ? Theme.of(context).textTheme.body1.color.withOpacity(0.07)
-      //             : Colors.transparent,
-      //       )
-      //     ],
-      //   ),
-      // ),
       body: _authBloc.userId != null
           ? _loading
               ? Center(
@@ -117,8 +58,34 @@ class _UserListsScreenState extends State<UserListsScreen>
                         AlwaysStoppedAnimation(Theme.of(context).accentColor),
                   ),
                 )
-              : _error == ''
-                  ? NestedScrollView(
+              : _error != ''
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        CustomErrorWidget(
+                          error: _error,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            IconButton(
+                              icon: Icon(Icons.refresh),
+                              onPressed: () => _authBloc.userId != null
+                                  ? _moviesBloc.getUserLists(_authBloc.userId)
+                                  : null,
+                            ),
+                            SizedBox(width: 10),
+                            IconButton(
+                              icon: Icon(Icons.more_vert),
+                              onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                      builder: (context) => DrawerMEXT())),
+                            ),
+                          ],
+                        )
+                      ],
+                    )
+                  : NestedScrollView(
                       controller: _scrollViewController,
                       headerSliverBuilder:
                           (BuildContext context, bool innerBoxIsScrolled) {
@@ -181,20 +148,6 @@ class _UserListsScreenState extends State<UserListsScreen>
                         ],
                         controller: _tabController,
                       ),
-                    )
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        CustomErrorWidget(
-                          error: _error,
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.refresh),
-                          onPressed: () => _authBloc.userId != null
-                              ? _moviesBloc.getUserLists(_authBloc.userId)
-                              : null,
-                        )
-                      ],
                     )
           : Center(
               child: Column(
