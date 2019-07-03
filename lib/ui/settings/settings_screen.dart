@@ -87,6 +87,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 value: _settingsBloc.loadFilters,
                 onChanged: (value) => _settingsBloc.loadFilters = value,
               ),
+              //TODO(marco): handle case where user adds movie to list
               SwitchListTile(
                 title: Text('Load movie on startup'),
                 subtitle: Text('Disable for faster app startup'),
