@@ -4,6 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsBloc extends ChangeNotifier {
   ThemeData _theme;
+  bool _loadFilters;
+  bool _loadMovieOnStart;
+  bool _loadUserListsOnStart;
   SharedPreferences _prefs;
 
   var _lightTheme = new ThemeData(
@@ -51,10 +54,15 @@ class SettingsBloc extends ChangeNotifier {
     print('settigs bloc init');
     try {
       _prefs = await SharedPreferences.getInstance();
+
       if (_prefs.getString(kTheme) == 'dark')
         _theme = _darkTheme;
       else
         _theme = _lightTheme;
+
+      _loadFilters = _prefs.getBool(kLoadFilters) ?? true;
+      _loadMovieOnStart = _prefs.getBool(kLoadMovieOnStart) ?? true;
+      _loadUserListsOnStart = _prefs.getBool(kLoadUserListsOnStart) ?? true;
 
       return true;
     } catch (e) {
@@ -63,6 +71,28 @@ class SettingsBloc extends ChangeNotifier {
   }
 
   ThemeData get theme => _theme;
+
+  bool get loadFilters => _loadFilters;
+  bool get loadMovieOnStart => _loadMovieOnStart;
+  bool get loadUserListsOnStart => _loadUserListsOnStart;
+
+  set loadFilters(bool load) {
+    _loadFilters = load;
+    notifyListeners();
+    _prefs.setBool(kLoadFilters, load);
+  }
+
+  set loadMovieOnStart(bool load) {
+    _loadMovieOnStart = load;
+    notifyListeners();
+    _prefs.setBool(kLoadMovieOnStart, load);
+  }
+
+  set loadUserListsOnStart(bool load) {
+    _loadUserListsOnStart = load;
+    notifyListeners();
+    _prefs.setBool(kLoadUserListsOnStart, load);
+  }
 
   void setTheme(ThemeMEXT theme) {
     switch (theme) {

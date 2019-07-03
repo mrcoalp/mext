@@ -36,3 +36,6 @@ const String kExcludeWatched = 'excludeWatched';
 
 enum ThemeMEXT { Automatic, Light, Dark }
 const String kTheme = 'theme';
+const String kLoadFilters = 'loadFilters';
+const String kLoadMovieOnStart = 'loadMovieOnStart';
+const String kLoadUserListsOnStart = 'loadUserListsOnStart';

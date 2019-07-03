@@ -116,6 +116,7 @@ class TrailerThumbnail extends StatelessWidget {
         onTap: onTap,
         child: Material(
           elevation: 5,
+          borderRadius: BorderRadius.circular(10),
           color: Colors.transparent,
           child: AspectRatio(
             aspectRatio: 16 / 9,
@@ -164,6 +165,7 @@ class MoviePoster extends StatelessWidget {
             MaterialPageRoute(builder: (context) => MovieDetailsScreen(movie))),
         child: Material(
           elevation: 5,
+          borderRadius: BorderRadius.circular(10),
           color: Colors.transparent,
           child: AspectRatio(
             aspectRatio: 2 / 3,
@@ -201,6 +203,7 @@ class MoviePosterNoAnimation extends StatelessWidget {
             MaterialPageRoute(builder: (context) => MovieDetailsScreen(movie))),
         child: Material(
           elevation: 5,
+          borderRadius: BorderRadius.circular(10),
           color: Colors.transparent,
           child: AspectRatio(
             aspectRatio: 2 / 3,

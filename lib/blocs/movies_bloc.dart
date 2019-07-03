@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:MEXT/blocs/settings_bloc.dart';
 import 'package:MEXT/constants.dart';
 import 'package:MEXT/data/models/genre.dart';
 import 'package:MEXT/data/models/movie.dart';
@@ -19,12 +20,12 @@ class MoviesBloc extends ChangeNotifier {
   Movie _currentMovie;
   List<Genre> _allGenres;
 
-  String _filterWithGenres;
-  String _filterWithoutGenres;
-  int _filterRating;
-  int _filterYear;
-  int _filterVoteCount;
-  bool _filterExcludeWatched;
+  String _filterWithGenres = '';
+  String _filterWithoutGenres = '';
+  int _filterRating = 0;
+  int _filterYear = 0;
+  int _filterVoteCount = 0;
+  bool _filterExcludeWatched = false;
 
   var movieHistory = new List<Movie>();
 
@@ -33,20 +34,23 @@ class MoviesBloc extends ChangeNotifier {
   List<Movie> _userFavouriteMovies;
   List<Movie> _userSuggestedMovies;
 
-  Future<void> init(int userId) async {
+  Future<void> init(int userId, SettingsBloc settings) async {
     print('movies bloc initializing');
-    SharedPreferences _prefs = await SharedPreferences.getInstance();
-    var filters = jsonDecode(_prefs.getString(kFilters) ?? '{}');
+    if (settings.loadFilters) {
+      SharedPreferences _prefs = await SharedPreferences.getInstance();
+      var filters = jsonDecode(_prefs.getString(kFilters) ?? '{}');
 
-    this._filterWithGenres = filters[kWithGenres] ?? '';
-    this._filterWithoutGenres = filters[kWithoutGenres] ?? '';
-    this._filterRating = filters[kRating] ?? 0;
-    this._filterYear = filters[kYear] ?? 0;
-    this._filterVoteCount = filters[kVotes] ?? 0;
-    this._filterExcludeWatched = filters[kExcludeWatched] ?? false;
+      this._filterWithGenres = filters[kWithGenres] ?? '';
+      this._filterWithoutGenres = filters[kWithoutGenres] ?? '';
+      this._filterRating = filters[kRating] ?? 0;
+      this._filterYear = filters[kYear] ?? 0;
+      this._filterVoteCount = filters[kVotes] ?? 0;
+      this._filterExcludeWatched = filters[kExcludeWatched] ?? false;
+    }
 
-    if (userId != null) await this._getUserLists(userId);
-    await this._getRandomMovie();
+    if (userId != null && settings.loadUserListsOnStart)
+      await this._getUserLists(userId);
+    if (settings.loadMovieOnStart) await this._getRandomMovie();
   }
 
   get userWatchedMovies => _userWatchedMovies;

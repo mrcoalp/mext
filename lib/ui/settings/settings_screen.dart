@@ -83,21 +83,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               SizedBox(height: 5),
               SwitchListTile(
-                title: Text('Save filters'),
-                value: true,
-                onChanged: (value) {},
+                title: Text('Load previous filters'),
+                value: _settingsBloc.loadFilters,
+                onChanged: (value) => _settingsBloc.loadFilters = value,
               ),
               SwitchListTile(
-                title: Text('Load movie on start'),
-                subtitle: Text('Disable for faster app start'),
-                value: true,
-                onChanged: (value) {},
+                title: Text('Load movie on startup'),
+                subtitle: Text('Disable for faster app startup'),
+                value: _settingsBloc.loadMovieOnStart,
+                onChanged: (value) => _settingsBloc.loadMovieOnStart = value,
               ),
               SwitchListTile(
-                title: Text('Load user lists on start'),
-                subtitle: Text('Disable for faster app start'),
-                value: true,
-                onChanged: (value) {},
+                title: Text('Load user lists on startup'),
+                subtitle: Text(
+                    'Disable for faster app startup\n(requires post refresh on user lists screen)'),
+                isThreeLine: true,
+                value: _settingsBloc.loadUserListsOnStart,
+                onChanged: (value) =>
+                    _settingsBloc.loadUserListsOnStart = value,
               )
             ],
           ),
