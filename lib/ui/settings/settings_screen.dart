@@ -48,6 +48,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
                 'Appearance',
@@ -66,6 +68,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onPressed: () async {
                   _settingsBloc.setTheme(await _selectTheme(context));
                 },
+              ),
+              SizedBox(height: 15),
+              Text(
+                'General',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context)
+                        .textTheme
+                        .body1
+                        .color
+                        .withOpacity(0.5)),
+              ),
+              SizedBox(height: 5),
+              SwitchListTile(
+                title: Text('Save filters'),
+                value: true,
+                onChanged: (value) {},
+              ),
+              SwitchListTile(
+                title: Text('Load movie on start'),
+                subtitle: Text('Disable for faster app start'),
+                value: true,
+                onChanged: (value) {},
+              ),
+              SwitchListTile(
+                title: Text('Load user lists on start'),
+                subtitle: Text('Disable for faster app start'),
+                value: true,
+                onChanged: (value) {},
               )
             ],
           ),

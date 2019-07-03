@@ -136,7 +136,7 @@ class TrailerThumbnail extends StatelessWidget {
                 ),
               ),
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(10),
                   image: DecorationImage(
                     image: NetworkImage(
                         'https://img.youtube.com/vi/$videoID/0.jpg'),
@@ -172,7 +172,7 @@ class MoviePoster extends StatelessWidget {
               child: Container(
                 width: MediaQuery.of(context).size.width / 3,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(10),
                   image: DecorationImage(
                     image: NetworkImage('$sTMDBimgPath${movie.poster_path}'),
                     fit: BoxFit.cover,
@@ -207,7 +207,7 @@ class MoviePosterNoAnimation extends StatelessWidget {
             child: Container(
               width: MediaQuery.of(context).size.width / 3,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(10),
                 image: DecorationImage(
                   image: NetworkImage('$sTMDBimgPath${movie.poster_path}'),
                   fit: BoxFit.cover,
