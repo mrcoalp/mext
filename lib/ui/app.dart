@@ -303,7 +303,7 @@ class MEXTMovie extends StatelessWidget {
               ),
             ),
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(15, 15, 60, 15),
+              padding: const EdgeInsets.fromLTRB(15, 15, 73, 15),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.start,

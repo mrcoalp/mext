@@ -80,9 +80,12 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                     <Widget>[
                       _loading
                           ? Center(
-                              child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation(
-                                    Theme.of(context).accentColor),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation(
+                                      Theme.of(context).accentColor),
+                                ),
                               ),
                             )
                           : Container(),
@@ -95,18 +98,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                 fontWeight: FontWeight.bold, fontSize: 18),
                           ),
                         ),
-                      if (_suggested.isNotEmpty && _authBloc.userId != null)
-                        Container(
-                          height: 150,
-                          child: ListView(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            children: <Widget>[
-                              for (Movie m in _suggested)
-                                MoviePosterNoAnimation(m),
-                            ],
-                          ),
-                        ),
+                      HorizontalMovieList(_suggested),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(8, 15, 8, 10),
                         child: Text(
@@ -115,18 +107,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                               fontWeight: FontWeight.bold, fontSize: 18),
                         ),
                       ),
-                      if (_trending.isNotEmpty)
-                        Container(
-                          height: 150,
-                          child: ListView(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            children: <Widget>[
-                              for (Movie m in _trending)
-                                MoviePosterNoAnimation(m),
-                            ],
-                          ),
-                        ),
+                      HorizontalMovieList(_trending),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(8, 15, 8, 10),
                         child: Text(
@@ -135,18 +116,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                               fontWeight: FontWeight.bold, fontSize: 18),
                         ),
                       ),
-                      if (_nowPlaying.isNotEmpty)
-                        Container(
-                          height: 150,
-                          child: ListView(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            children: <Widget>[
-                              for (Movie m in _nowPlaying)
-                                MoviePosterNoAnimation(m),
-                            ],
-                          ),
-                        ),
+                      HorizontalMovieList(_nowPlaying),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(8, 15, 8, 10),
                         child: Text(
@@ -155,18 +125,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                               fontWeight: FontWeight.bold, fontSize: 18),
                         ),
                       ),
-                      if (_popular.isNotEmpty)
-                        Container(
-                          height: 150,
-                          child: ListView(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            children: <Widget>[
-                              for (Movie m in _popular)
-                                MoviePosterNoAnimation(m),
-                            ],
-                          ),
-                        ),
+                      HorizontalMovieList(_popular),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(8, 15, 8, 10),
                         child: Text(
@@ -175,23 +134,35 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                               fontWeight: FontWeight.bold, fontSize: 18),
                         ),
                       ),
-                      if (_upcoming.isNotEmpty)
-                        Container(
-                          height: 150,
-                          child: ListView(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            children: <Widget>[
-                              for (Movie m in _upcoming)
-                                MoviePosterNoAnimation(m),
-                            ],
-                          ),
-                        ),
+                      HorizontalMovieList(_upcoming),
                     ],
                   ),
                 )
         ],
       ),
     );
+  }
+}
+
+class HorizontalMovieList extends StatelessWidget {
+  final List<Movie> movies;
+
+  HorizontalMovieList(this.movies);
+
+  @override
+  Widget build(BuildContext context) {
+    var widget = movies.isNotEmpty
+        ? Container(
+            height: 120,
+            child: ListView(
+              shrinkWrap: true,
+              scrollDirection: Axis.horizontal,
+              children: <Widget>[
+                for (Movie m in movies) MoviePosterNoAnimation(m),
+              ],
+            ),
+          )
+        : Container();
+    return widget;
   }
 }

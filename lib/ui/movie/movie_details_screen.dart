@@ -133,74 +133,115 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     ),
                   ),
                   SizedBox(height: 15),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context)
-                          .textTheme
-                          .body1
-                          .color
-                          .withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        IconButton(
-                          icon: Icon(
-                            FontAwesomeIcons.eye,
-                            size: 16,
-                            color: _watched.indexWhere(
-                                        (m) => m.id == widget._movie.id) >=
-                                    0
-                                ? Theme.of(context).accentColor
-                                : Theme.of(context).textTheme.body1.color,
-                          ),
-                          onPressed: () => _watched.indexWhere(
-                                      (m) => m.id == widget._movie.id) >=
-                                  0
-                              ? _removeFromList(UserList.Watched,
-                                  _authBloc.userId, widget._movie, _moviesBloc)
-                              : _addToList(UserList.Watched, _authBloc.userId,
-                                  widget._movie, _moviesBloc),
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            FontAwesomeIcons.clock,
-                            size: 16,
-                            color: _towatch.indexWhere(
-                                        (m) => m.id == widget._movie.id) >=
-                                    0
-                                ? Theme.of(context).accentColor
-                                : Theme.of(context).textTheme.body1.color,
-                          ),
-                          onPressed: () => _towatch.indexWhere(
-                                      (m) => m.id == widget._movie.id) >=
-                                  0
-                              ? _removeFromList(UserList.ToWatch,
-                                  _authBloc.userId, widget._movie, _moviesBloc)
-                              : _addToList(UserList.ToWatch, _authBloc.userId,
-                                  widget._movie, _moviesBloc),
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            FontAwesomeIcons.heart,
-                            size: 16,
-                            color: _favourites.indexWhere(
-                                        (m) => m.id == widget._movie.id) >=
-                                    0
-                                ? Theme.of(context).accentColor
-                                : Theme.of(context).textTheme.body1.color,
-                          ),
-                          onPressed: () => _favourites.indexWhere(
-                                      (m) => m.id == widget._movie.id) >=
-                                  0
-                              ? _removeFromList(UserList.Favourites,
-                                  _authBloc.userId, widget._movie, _moviesBloc)
-                              : _addToList(UserList.Favourites,
-                                  _authBloc.userId, widget._movie, _moviesBloc),
-                        ),
-                      ],
+                  Material(
+                    elevation: 2,
+                    borderRadius: BorderRadius.circular(30),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .textTheme
+                            .body1
+                            .color
+                            .withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: (_moviesBloc.userFavouriteMovies == null &&
+                              _moviesBloc.userWatchedMovies == null &&
+                              _moviesBloc.userToWatchMovies == null &&
+                              _authBloc.userId != null)
+                          ? FlatButton(
+                              child: Text('Load Lists'),
+                              textColor: Theme.of(context).accentColor,
+                              onPressed: () =>
+                                  _moviesBloc.getUserLists(_authBloc.userId),
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                IconButton(
+                                  icon: Icon(
+                                    FontAwesomeIcons.eye,
+                                    size: 16,
+                                    color: _watched.indexWhere((m) =>
+                                                m.id == widget._movie.id) >=
+                                            0
+                                        ? Theme.of(context).accentColor
+                                        : Theme.of(context)
+                                            .textTheme
+                                            .body1
+                                            .color,
+                                  ),
+                                  onPressed: () => _watched.indexWhere((m) =>
+                                              m.id == widget._movie.id) >=
+                                          0
+                                      ? _removeFromList(
+                                          UserList.Watched,
+                                          _authBloc.userId,
+                                          widget._movie,
+                                          _moviesBloc)
+                                      : _addToList(
+                                          UserList.Watched,
+                                          _authBloc.userId,
+                                          widget._movie,
+                                          _moviesBloc),
+                                ),
+                                IconButton(
+                                  icon: Icon(
+                                    FontAwesomeIcons.clock,
+                                    size: 16,
+                                    color: _towatch.indexWhere((m) =>
+                                                m.id == widget._movie.id) >=
+                                            0
+                                        ? Theme.of(context).accentColor
+                                        : Theme.of(context)
+                                            .textTheme
+                                            .body1
+                                            .color,
+                                  ),
+                                  onPressed: () => _towatch.indexWhere((m) =>
+                                              m.id == widget._movie.id) >=
+                                          0
+                                      ? _removeFromList(
+                                          UserList.ToWatch,
+                                          _authBloc.userId,
+                                          widget._movie,
+                                          _moviesBloc)
+                                      : _addToList(
+                                          UserList.ToWatch,
+                                          _authBloc.userId,
+                                          widget._movie,
+                                          _moviesBloc),
+                                ),
+                                IconButton(
+                                  icon: Icon(
+                                    FontAwesomeIcons.heart,
+                                    size: 16,
+                                    color: _favourites.indexWhere((m) =>
+                                                m.id == widget._movie.id) >=
+                                            0
+                                        ? Theme.of(context).accentColor
+                                        : Theme.of(context)
+                                            .textTheme
+                                            .body1
+                                            .color,
+                                  ),
+                                  onPressed: () => _favourites.indexWhere((m) =>
+                                              m.id == widget._movie.id) >=
+                                          0
+                                      ? _removeFromList(
+                                          UserList.Favourites,
+                                          _authBloc.userId,
+                                          widget._movie,
+                                          _moviesBloc)
+                                      : _addToList(
+                                          UserList.Favourites,
+                                          _authBloc.userId,
+                                          widget._movie,
+                                          _moviesBloc),
+                                ),
+                              ],
+                            ),
                     ),
                   ),
                   SizedBox(height: 15),

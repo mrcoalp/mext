@@ -18,17 +18,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
           return SimpleDialog(
             title: const Text('Select Theme '),
             children: <Widget>[
-              SimpleDialogOption(
-                onPressed: () {
-                  Navigator.pop(context, ThemeMEXT.Light);
-                },
-                child: const Text('Light'),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SimpleDialogOption(
+                  onPressed: () {
+                    Navigator.pop(context, ThemeMEXT.Light);
+                  },
+                  child: const Text('Light'),
+                ),
               ),
-              SimpleDialogOption(
-                onPressed: () {
-                  Navigator.pop(context, ThemeMEXT.Dark);
-                },
-                child: const Text('Dark'),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SimpleDialogOption(
+                  onPressed: () {
+                    Navigator.pop(context, ThemeMEXT.Dark);
+                  },
+                  child: const Text('Dark'),
+                ),
               ),
             ],
           );
@@ -87,7 +93,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 value: _settingsBloc.loadFilters,
                 onChanged: (value) => _settingsBloc.loadFilters = value,
               ),
-              //TODO(marco): handle case where user adds movie to list
               SwitchListTile(
                 title: Text('Load movie on startup'),
                 subtitle: Text('Disable for faster app startup'),

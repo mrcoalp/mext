@@ -134,6 +134,20 @@ class _UserListsScreenState extends State<UserListsScreen>
                               controller: _tabController,
                             ),
                           ),
+                          if (_moviesBloc.userFavouriteMovies == null &&
+                              _moviesBloc.userToWatchMovies == null &&
+                              _moviesBloc.userWatchedMovies == null &&
+                              _authBloc.userId != null)
+                            SliverToBoxAdapter(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: RaisedButton(
+                                  child: Text('Load Lists'),
+                                  onPressed: () => _moviesBloc
+                                      .getUserLists(_authBloc.userId),
+                                ),
+                              ),
+                            )
                         ];
                       },
                       body: TabBarView(
@@ -143,8 +157,16 @@ class _UserListsScreenState extends State<UserListsScreen>
                                   ? _moviesBloc.getUserLists(_authBloc.userId)
                                   : null,
                               child: WatchedList(watched: _watched)),
-                          ToWatchList(toWatch: _toWatch),
-                          FavouritesList(favourites: _favourites),
+                          RefreshIndicator(
+                              onRefresh: () => _authBloc.userId != null
+                                  ? _moviesBloc.getUserLists(_authBloc.userId)
+                                  : null,
+                              child: ToWatchList(toWatch: _toWatch)),
+                          RefreshIndicator(
+                              onRefresh: () => _authBloc.userId != null
+                                  ? _moviesBloc.getUserLists(_authBloc.userId)
+                                  : null,
+                              child: FavouritesList(favourites: _favourites)),
                         ],
                         controller: _tabController,
                       ),
