@@ -60,14 +60,21 @@ class FlatIconButton extends StatelessWidget {
   final String text;
   final IconData icon;
   final Function onPressed;
+  final Color color;
+  final Color textColor;
 
   FlatIconButton(
-      {@required this.text, @required this.icon, @required this.onPressed});
+      {@required this.text,
+      @required this.icon,
+      @required this.onPressed,
+      this.color,
+      this.textColor});
 
   @override
   Widget build(BuildContext context) {
     return FlatButton(
-      textColor: Theme.of(context).accentColor,
+      textColor: textColor ?? Theme.of(context).accentColor,
+      color: color ?? Colors.transparent,
       child: Row(
         children: <Widget>[
           Icon(icon),

@@ -50,7 +50,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           SliverAppBar(
             title: PreferredSize(
               preferredSize: Size.fromHeight(40),
-              child: Text(''),
+              child: Text('Discover'),
             ),
             automaticallyImplyLeading: false,
             actions: <Widget>[
@@ -93,9 +93,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(8, 15, 8, 10),
                           child: Text(
-                            'Made for you, ${_authBloc.user.username}',
+                            'Made for you, ${_authBloc.user.name.split(' ')[0]}',
                             style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18),
+                                fontWeight: FontWeight.bold, fontSize: 17),
                           ),
                         ),
                       HorizontalMovieList(_suggested),
@@ -103,17 +103,15 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                         padding: const EdgeInsets.fromLTRB(8, 15, 8, 10),
                         child: Text(
                           'Trending',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 18),
+                          style: TextStyle(fontSize: 16),
                         ),
                       ),
                       HorizontalMovieList(_trending),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(8, 15, 8, 10),
                         child: Text(
-                          'Now playing on theaters',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 18),
+                          'Now playing in theaters',
+                          style: TextStyle(fontSize: 16),
                         ),
                       ),
                       HorizontalMovieList(_nowPlaying),
@@ -121,8 +119,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                         padding: const EdgeInsets.fromLTRB(8, 15, 8, 10),
                         child: Text(
                           'Popular Movies',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 18),
+                          style: TextStyle(fontSize: 16),
                         ),
                       ),
                       HorizontalMovieList(_popular),
@@ -130,8 +127,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                         padding: const EdgeInsets.fromLTRB(8, 15, 8, 10),
                         child: Text(
                           'Upcoming Movies',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 18),
+                          style: TextStyle(fontSize: 16),
                         ),
                       ),
                       HorizontalMovieList(_upcoming),

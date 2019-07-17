@@ -132,6 +132,8 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                       fontSize: 20,
                     ),
                   ),
+                  SizedBox(height: 5),
+                  Text('${widget._movie.release_date}'),
                   SizedBox(height: 15),
                   Material(
                     elevation: 2,
@@ -253,16 +255,14 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                       Text('Rating: ${widget._movie.vote_average.toString()}'),
                       SizedBox(width: 5),
                       _ratingStars(widget._movie.vote_average),
+                      SizedBox(width: 5),
+                      Text('(${widget._movie.vote_count} votes)'),
                     ],
                   ),
-                  SizedBox(height: 5),
-                  Text('${widget._movie.vote_count} votes'),
-                  SizedBox(height: 5),
-
-                  // SizedBox(height: 15),
-                  Text('${widget._movie.release_date}'),
-                  SizedBox(height: 5),
-                  Text('Original Title: ${widget._movie.original_title}'),
+                  if (widget._movie.original_title != widget._movie.title)
+                    SizedBox(height: 5),
+                  if (widget._movie.original_title != widget._movie.title)
+                    Text('Original Title: ${widget._movie.original_title}'),
                   SizedBox(height: 5),
                   Text('Original Language: ${widget._movie.original_language}'),
                   SizedBox(height: 20),
@@ -285,12 +285,39 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                               children: <Widget>[
                                 Text('Runtime: ${_movieInfo.runtime} mins'),
                                 SizedBox(height: 20),
-                                for (String t in _trailers)
-                                  TrailerThumbnail(
-                                    t,
-                                    () async {
-                                      await _launchURL('$sYouTubePath$t');
-                                    },
+                                if (this._trailers.length == 1)
+                                  for (String t in _trailers)
+                                    Center(
+                                      child: Container(
+                                        height: 170,
+                                        child: TrailerThumbnail(
+                                          t,
+                                          () async {
+                                            await _launchURL('$sYouTubePath$t');
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                if (this._trailers.length > 1)
+                                  Container(
+                                    height: 170,
+                                    child: ListView(
+                                      scrollDirection: Axis.horizontal,
+                                      children: <Widget>[
+                                        for (String t in _trailers)
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                                left: 7, right: 7),
+                                            child: TrailerThumbnail(
+                                              t,
+                                              () async {
+                                                await _launchURL(
+                                                    '$sYouTubePath$t');
+                                              },
+                                            ),
+                                          ),
+                                      ],
+                                    ),
                                   ),
                                 SizedBox(height: 10),
                                 Center(

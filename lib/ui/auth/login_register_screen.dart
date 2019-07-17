@@ -68,7 +68,7 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
       appBar: AppBar(
         elevation: 0,
         title: _screen == Screen.LOGIN ? Text('Login') : Text('Register'),
-        backgroundColor: Colors.teal,
+        backgroundColor: Theme.of(context).accentColor,
         actions: <Widget>[
           _loading
               ? Center(
@@ -144,7 +144,7 @@ class _LoginState extends State<Login> {
     final _username = TextField(
       controller: _userCtrl,
       keyboardType: TextInputType.text,
-      cursorColor: Colors.teal,
+      cursorColor: Theme.of(context).accentColor,
       decoration: InputDecoration(
         hintText: 'username',
       ),
@@ -153,7 +153,7 @@ class _LoginState extends State<Login> {
     final _password = TextField(
       controller: _passwordCtrl,
       keyboardType: TextInputType.text,
-      cursorColor: Colors.teal,
+      cursorColor: Theme.of(context).accentColor,
       decoration: InputDecoration(
         hintText: 'password',
       ),
@@ -246,7 +246,7 @@ class _RegisterState extends State<Register> {
     final _name = TextField(
       controller: _nameCtrl,
       keyboardType: TextInputType.text,
-      cursorColor: Colors.teal,
+      cursorColor: Theme.of(context).accentColor,
       decoration: InputDecoration(
         hintText: 'name (optional)',
       ),
@@ -255,7 +255,7 @@ class _RegisterState extends State<Register> {
     final _username = TextField(
       controller: _usernameCtrl,
       keyboardType: TextInputType.text,
-      cursorColor: Colors.teal,
+      cursorColor: Theme.of(context).accentColor,
       decoration: InputDecoration(
         hintText: 'username',
       ),
@@ -264,7 +264,7 @@ class _RegisterState extends State<Register> {
     final _email = TextField(
       controller: _emailCtrl,
       keyboardType: TextInputType.text,
-      cursorColor: Colors.teal,
+      cursorColor: Theme.of(context).accentColor,
       decoration: InputDecoration(
         hintText: 'email',
       ),
@@ -273,7 +273,7 @@ class _RegisterState extends State<Register> {
     final _password = TextField(
       controller: _passwordCtrl,
       keyboardType: TextInputType.text,
-      cursorColor: Colors.teal,
+      cursorColor: Theme.of(context).accentColor,
       decoration: InputDecoration(
         hintText: 'password',
       ),
@@ -283,7 +283,7 @@ class _RegisterState extends State<Register> {
     final _passwordConfirm = TextField(
       controller: _passwordConfirmCtrl,
       keyboardType: TextInputType.text,
-      cursorColor: Colors.teal,
+      cursorColor: Theme.of(context).accentColor,
       decoration: InputDecoration(
         hintText: 'confirm password',
       ),
@@ -395,12 +395,16 @@ class BackGround extends StatelessWidget {
       child: Container(
         height: 300.0,
       ),
-      painter: CurvePainter(),
+      painter: CurvePainter(color: Theme.of(context).accentColor),
     );
   }
 }
 
 class CurvePainter extends CustomPainter {
+  final Color color;
+
+  CurvePainter({@required this.color});
+
   @override
   void paint(Canvas canvas, Size size) {
     Path path = Path();
@@ -419,7 +423,7 @@ class CurvePainter extends CustomPainter {
         size.width * 0.70, size.height * 0.90, size.width, 0);
     path.close();
 
-    paint.color = Colors.teal.withOpacity(0.5);
+    paint.color = this.color.withOpacity(0.5);
     canvas.drawPath(path, paint);
 
     path = Path();
@@ -437,7 +441,7 @@ class CurvePainter extends CustomPainter {
     path.lineTo(size.width, 0);
     path.close();
 
-    paint.color = Colors.teal.withOpacity(0.8);
+    paint.color = this.color.withOpacity(0.8);
     canvas.drawPath(path, paint);
 
     path = Path();
@@ -453,7 +457,7 @@ class CurvePainter extends CustomPainter {
     path.lineTo(size.width, 0);
     path.close();
 
-    paint.color = Colors.teal;
+    paint.color = this.color;
     canvas.drawPath(path, paint);
   }
 

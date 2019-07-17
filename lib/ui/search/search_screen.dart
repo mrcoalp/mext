@@ -43,7 +43,7 @@ class _SearchScreenState extends State<SearchScreen> {
       keyboardType: TextInputType.text,
       cursorColor: Colors.teal,
       decoration: InputDecoration(
-        hintText: 'search',
+        hintText: 'Search',
       ),
       onSubmitted: (value) {
         _searchMovies(value, 1);

@@ -31,7 +31,7 @@ class SettingsBloc extends ChangeNotifier {
   var _darkTheme = new ThemeData(
     brightness: Brightness.dark,
     primaryColor: Colors.grey[800],
-    accentColor: Colors.teal,
+    accentColor: Colors.lightGreen,
     scaffoldBackgroundColor: Colors.grey[800],
     buttonColor: Colors.grey[800],
     appBarTheme: AppBarTheme(
@@ -43,7 +43,7 @@ class SettingsBloc extends ChangeNotifier {
       color: Colors.grey[800],
     ),
     buttonTheme: ButtonThemeData(
-      buttonColor: Colors.teal,
+      buttonColor: Colors.lightGreen,
       textTheme: ButtonTextTheme.primary,
     ),
   );
