@@ -1,4 +1,5 @@
 const String sTMDBimgPath = 'http://image.tmdb.org/t/p/w780';
+const String sTMDBimgPathLowRes = 'http://image.tmdb.org/t/p/w185';
 const String sYouTubePath = 'https://www.youtube.com/watch?v=';
 const String sIMDBPath = 'https://www.imdb.com/title/';
 const List<dynamic> lGenres = [

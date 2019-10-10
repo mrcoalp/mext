@@ -18,7 +18,7 @@ class MovieCard extends StatelessWidget {
           leading: movie.poster_path != null
               ? Hero(
                   tag: movie.id,
-                  child: Image.network('$sTMDBimgPath${movie.poster_path}'),
+                  child: Image.network('$sTMDBimgPathLowRes${movie.poster_path}'),
                 )
               : SizedBox(),
           title: Text(
@@ -157,7 +157,8 @@ class MoviePoster extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   image: DecorationImage(
-                    image: NetworkImage('$sTMDBimgPath${movie.poster_path}'),
+                    image:
+                        NetworkImage('$sTMDBimgPathLowRes${movie.poster_path}'),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -193,7 +194,8 @@ class MoviePosterNoAnimation extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 image: DecorationImage(
-                  image: NetworkImage('$sTMDBimgPath${movie.poster_path}'),
+                  image:
+                      NetworkImage('$sTMDBimgPathLowRes${movie.poster_path}'),
                   fit: BoxFit.cover,
                 ),
               ),

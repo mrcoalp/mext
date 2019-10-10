@@ -493,8 +493,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 FlatButton(
                   child: Text('NO'),
                   onPressed: () => Navigator.of(context).pop(),
+                  textColor: Theme.of(context).accentColor,
                 ),
                 FlatButton(
+                  textColor: Theme.of(context).accentColor,
                   child: Text('YES'),
                   onPressed: () async {
                     try {
@@ -572,10 +574,12 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
               content: Text(alertContent),
               actions: <Widget>[
                 FlatButton(
+                  textColor: Theme.of(context).accentColor,
                   child: Text('NO'),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
                 FlatButton(
+                  textColor: Theme.of(context).accentColor,
                   child: Text('YES'),
                   onPressed: () async {
                     try {
@@ -614,10 +618,12 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
           content: Text('You must be logged in to save lists'),
           actions: <Widget>[
             FlatButton(
+              textColor: Theme.of(context).accentColor,
               child: Text('OK'),
               onPressed: () => Navigator.of(context).pop(),
             ),
             FlatButton(
+                textColor: Theme.of(context).accentColor,
                 child: Text('LOGIN'),
                 onPressed: () {
                   Navigator.of(context).pop();

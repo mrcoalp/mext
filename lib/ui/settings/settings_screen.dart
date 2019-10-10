@@ -89,17 +89,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               SizedBox(height: 5),
               SwitchListTile(
+                activeColor: Theme.of(context).accentColor,
                 title: Text('Load previous filters'),
                 value: _settingsBloc.loadFilters,
                 onChanged: (value) => _settingsBloc.loadFilters = value,
               ),
               SwitchListTile(
+                activeColor: Theme.of(context).accentColor,
                 title: Text('Load movie on startup'),
                 subtitle: Text('Disable for faster app startup'),
                 value: _settingsBloc.loadMovieOnStart,
                 onChanged: (value) => _settingsBloc.loadMovieOnStart = value,
               ),
               SwitchListTile(
+                activeColor: Theme.of(context).accentColor,
                 title: Text('Load user lists on startup'),
                 subtitle: Text(
                     'Disable for faster app startup\n(requires post refresh on user lists screen)'),

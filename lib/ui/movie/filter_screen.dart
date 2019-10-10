@@ -222,6 +222,7 @@ class _FilterScreenState extends State<FilterScreen> {
                   ? Padding(
                       padding: const EdgeInsets.only(top: 20),
                       child: SwitchListTile(
+                        activeColor: Theme.of(context).accentColor,
                         value: _excludeWatched,
                         onChanged: (value) {
                           _moviesBloc.filterExcludeWatched = value;
